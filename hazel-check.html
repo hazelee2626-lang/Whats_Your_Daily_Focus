@@ -98,7 +98,7 @@
     .sec-emoji{font-size:15px;cursor:pointer;touch-action:manipulation;transition:transform .15s;}
     .sec-name{font-size:13px;font-weight:600;flex:1;}
     .sec-stat{font-size:11px;color:var(--dim);margin-right:5px;}
-    .sec-edit-btn{background:var(--surf2);border:1px solid var(--border);border-radius:20px;font-family:inherit;font-size:12px;font-weight:500;color:var(--dim);cursor:pointer;padding:5px 11px;transition:background .15s,color .15s,border-color .15s;}
+    .sec-edit-btn{background:var(--surf2);border:1px solid var(--border);border-radius:20px;font-family:inherit;font-size:14px;color:var(--dim);cursor:pointer;padding:4px 9px;transition:background .15s,color .15s,border-color .15s;line-height:1;}
     .sec-card.editing .sec-edit-btn{background:var(--col);border-color:var(--col);color:var(--bg);font-weight:700;}
     .sec-divider{height:1px;background:var(--border);margin:0 16px;}
     .item-list{list-style:none;}
@@ -145,8 +145,10 @@
     .add-input::placeholder{color:var(--dim);}
     .add-input:focus{border-color:var(--col,var(--gold));}
     .add-btn{border:none;border-radius:11px;padding:10px 15px;background:var(--col);color:var(--bg);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;}
-    .quick-add{display:flex;align-items:center;gap:7px;padding:10px 16px 13px;font-size:13px;color:var(--dim);cursor:pointer;touch-action:manipulation;}
+    .quick-add{display:flex;align-items:center;gap:7px;padding:10px 12px 13px 16px;font-size:13px;color:var(--dim);cursor:pointer;touch-action:manipulation;}
     .quick-add:active{color:var(--text);}
+    .sec-drag-handle{display:flex;align-items:center;padding:4px 4px;color:var(--border);font-size:15px;cursor:grab;touch-action:none;flex-shrink:0;margin-left:auto;transition:color .2s;}
+    .sec-drag-handle:active{color:var(--dim);}
     .quick-plus{font-size:18px;font-weight:300;line-height:1;}
 
     /* ═══ MATRIX VIEW ══════════════════════════════════ */
@@ -175,6 +177,8 @@
     .m-item{display:flex;align-items:center;gap:6px;padding:5px 6px;border-radius:8px;user-select:none;-webkit-user-select:none;}
     /* Matrix drag handle — always visible, very subtle */
     .m-drag{display:flex;align-items:center;color:var(--border);font-size:13px;cursor:grab;touch-action:none;flex-shrink:0;padding:0 2px;}
+    .m-sec-drag{display:flex;align-items:center;color:var(--border);font-size:12px;cursor:grab;touch-action:none;flex-shrink:0;padding:2px 4px;transition:color .2s;}
+    .m-sec-drag:active{color:var(--dim);}
     .m-drag:active{color:var(--dim);}
     .m-item.is-dragging{background:var(--surf2);box-shadow:0 4px 16px rgba(0,0,0,.5);border-radius:8px;z-index:10;}
 
@@ -273,7 +277,7 @@
       <div class="gear-btn" id="gearBtn">⚙</div>
     </div>
     <div class="hdr-right">
-      <div class="streak-pill" id="streakPill">🔥 <span id="streakNum">0</span>일째</div>
+      <div class="streak-pill" id="streakPill">🔥 <span id="streakNum">0</span><span id="streakUnit">일째</span></div>
       <div class="view-toggle">
         <button class="vtog active" id="btnList">☰</button>
         <button class="vtog" id="btnMatrix">⊞</button>
@@ -282,7 +286,7 @@
   </div>
   <div class="date-lbl" id="dateLbl"></div>
   <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
-  <div class="prog-label" id="progLabel">로딩 중...</div>
+  <div class="prog-label" id="progLabel">…</div>
 </header>
 
 <div id="listView"></div>
@@ -290,8 +294,8 @@
 <div id="settingsView"></div>
 
 <div class="footer-bar" id="footerBar">
-  <button class="footer-btn btn-discord" id="discordBtn">📋 Discord 인증</button>
-  <button class="footer-btn btn-reset" id="resetBtn">🌙 마무리</button>
+  <button class="footer-btn btn-discord" id="discordBtn">📋 Discord</button>
+  <button class="footer-btn btn-reset" id="resetBtn">🌙</button>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -300,40 +304,40 @@
   <div class="sheet">
     <div class="sheet-header"><div class="sheet-title" id="sheetTitle"></div><div class="sheet-tag" id="sheetTag"></div></div>
     <div class="sheet-preview" id="sheetPreview"></div>
-    <div class="sheet-actions"><button class="sheet-cancel" id="discordCancel">취소</button><button class="sheet-ok" style="background:var(--discord);" id="discordCopy">📋 복사하기</button></div>
+    <div class="sheet-actions"><button class="sheet-cancel" id="discordCancel"></button><button class="sheet-ok" style="background:var(--discord);" id="discordCopy"></button></div>
   </div>
 </div>
 <!-- Reset -->
 <div class="overlay" id="resetOverlay">
   <div class="sheet">
-    <div class="sheet-title">오늘 하루 수고했어 🌙</div>
-    <div class="sheet-desc">체크 내역만 초기화할게.<br>항목 목록은 그대로 남아있어.</div>
-    <div class="sheet-actions"><button class="sheet-cancel" id="resetCancel">취소</button><button class="sheet-ok" style="background:var(--gold);color:#12100B;" id="resetOk">리셋할게</button></div>
+    <div class="sheet-title" id="resetTitle"></div>
+    <div class="sheet-desc" id="resetDesc"></div>
+    <div class="sheet-actions"><button class="sheet-cancel" id="resetCancel"></button><button class="sheet-ok" style="background:var(--gold);color:#12100B;" id="resetOk"></button></div>
   </div>
 </div>
 <!-- Color -->
 <div class="overlay" id="colorOverlay">
   <div class="sheet">
-    <div class="sheet-title" style="margin-bottom:14px;">섹션 색상 변경</div>
+    <div class="sheet-title" id="colorTitle" style="margin-bottom:14px;"></div>
     <div class="color-palette" id="colorPalette"></div>
-    <div style="margin-bottom:14px;"><div style="font-size:12px;color:var(--dim);margin-bottom:8px;">직접 입력</div><input id="colorHexInput" type="text" placeholder="#D4A853" style="width:100%;background:var(--surf2);border:1px solid var(--border);border-radius:10px;padding:10px 13px;color:var(--text);font-family:inherit;font-size:14px;outline:none;"></div>
-    <div class="sheet-actions"><button class="sheet-cancel" id="colorCancel">취소</button><button class="sheet-ok" style="background:var(--gold);color:#12100B;" id="colorOk">적용</button></div>
+    <div style="margin-bottom:14px;"><div id="colorDirectLabel" style="font-size:12px;color:var(--dim);margin-bottom:8px;"></div><input id="colorHexInput" type="text" placeholder="#D4A853" style="width:100%;background:var(--surf2);border:1px solid var(--border);border-radius:10px;padding:10px 13px;color:var(--text);font-family:inherit;font-size:14px;outline:none;"></div>
+    <div class="sheet-actions"><button class="sheet-cancel" id="colorCancel"></button><button class="sheet-ok" style="background:var(--gold);color:#12100B;" id="colorOk"></button></div>
   </div>
 </div>
 <!-- Emoji -->
 <div class="overlay" id="emojiOverlay">
   <div class="sheet">
-    <div class="sheet-title" style="margin-bottom:14px;">이모지 변경</div>
+    <div class="sheet-title" id="emojiTitle" style="margin-bottom:14px;"></div>
     <div class="emoji-grid" id="emojiGrid"></div>
-    <div class="sheet-actions"><button class="sheet-cancel" id="emojiCancel">취소</button></div>
+    <div class="sheet-actions"><button class="sheet-cancel" id="emojiCancel"></button></div>
   </div>
 </div>
 <!-- Danger -->
 <div class="overlay" id="dangerOverlay">
   <div class="sheet">
-    <div class="sheet-title">전체 초기화 ⚠️</div>
-    <div class="sheet-desc">모든 데이터가 삭제돼.<br>섹션, 항목, 체크 기록, 스트릭까지 전부.</div>
-    <div class="sheet-actions"><button class="sheet-cancel" id="dangerCancel">취소</button><button class="sheet-ok" style="background:#B07070;" id="dangerOk">전부 초기화</button></div>
+    <div class="sheet-title" id="dangerTitle">전체 초기화 ⚠️</div>
+    <div class="sheet-desc" id="dangerDesc">모든 데이터가 삭제돼.<br>섹션, 항목, 체크 기록, 스트릭까지 전부.</div>
+    <div class="sheet-actions"><button class="sheet-cancel" id="dangerCancel"></button><button class="sheet-ok" style="background:#B07070;" id="dangerOk"></button></div>
   </div>
 </div>
 
@@ -367,8 +371,9 @@ let checkedTimes=LS.get('hz_ctimes',{});
 let streak      =LS.get('hz_streak',0);
 let lastReset   =LS.get('hz_lastReset',null);
 let appTitle    =LS.get('hz_title','Hazel Check');
-let settings    =LS.get('hz_settings',{arcGauge:true,miniBar:true});
+let settings    =LS.get('hz_settings',{arcGauge:true,miniBar:true,gaugeLabel:true});
 let curTheme    =LS.get('hz_theme','dark');
+let curLang     =LS.get('hz_lang','ko');
 let editKey     =null;
 let curView     ='list';
 let editingName =false;
@@ -378,12 +383,163 @@ let wasAllDone  =false;
 //  Util
 // ══════════════════════════════════════════════════════
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-const fmtTime=ts=>{const d=new Date(ts),h=d.getHours(),m=String(d.getMinutes()).padStart(2,'0');return `${h>=12?'오후':'오전'} ${h%12||12}:${m}`;};
 const todayStr=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
 const dayDiff=(a,b)=>Math.round((new Date(b)-new Date(a))/86400000);
 const allItems=()=>sections.flatMap(s=>s.items);
 const findSec=id=>sections.find(s=>s.items.some(it=>it.id===id));
 const uid=p=>`${p}_${Date.now()}_${Math.random().toString(36).slice(2,5)}`;
+
+// ══════════════════════════════════════════════════════
+//  Translations
+// ══════════════════════════════════════════════════════
+const LANG = {
+  ko: {
+    editBtn: '✏️', doneBtn: '✓',
+    quickAdd: '항목 추가 / 편집', addPlaceholder: '새 항목 입력…', addBtn: '추가',
+    mAddTrig: '+ 항목 추가', mAddPlaceholder: '새 항목…',
+    discordBtn: '📋 Discord 인증', resetBtn: '🌙 마무리',
+    loading: '로딩 중...',
+    complete: (d,t)=>`${d} / ${t} 완료`,
+    streakUnit: '일째',
+    btnList: '☰', btnMatrix: '⊞',
+    discordTodo: '오늘 할 일 공유 📋', discordDone: '완료 인증 공유 ✅',
+    tagTodo: '#해야할일', tagDone: '#완료한일',
+    discordTodoHash: '#해야할일', discordDoneHash: '#완료한일',
+    copyBtn: '📋 복사하기', cancelBtn: '취소',
+    resetTitle: '오늘 하루 수고했어 🌙',
+    resetDesc: '체크 내역만 초기화할게.\n항목 목록은 그대로 남아있어.',
+    resetOk: '리셋할게',
+    toastCopied: '복사 완료! Discord에 붙여넣기 해줘 🎉',
+    toastReset: (n)=>`🔥 ${n}일째 달성! 오늘도 수고했어`,
+    toastAllDone: '🎉 전부 완료! 오늘 진짜 잘했어!',
+    toastColorChanged: '색상 변경됐어!',
+    toastEmojiChanged: '이모지 변경됐어!',
+    toastSecAdded: (n)=>`섹션 "${n}" 추가됐어!`,
+    toastSecDeleted: '섹션 삭제됐어.',
+    toastMinSec: '섹션이 하나 이상 있어야 해!',
+    toastColorErr: '올바른 색상 코드를 입력해줘 (예: #D4A853)',
+    toastReset2: '전체 초기화 완료!',
+    settingAppName: '앱 이름', settingTheme: '테마', settingViz: '🎨 시각화',
+    settingSection: '섹션 관리', settingData: '데이터',
+    settingLang: '언어',
+    arcLabel: '원형 게이지', arcSub: '매트릭스 뷰 상단 섹션별 원형 진행률',
+    barLabel: '카드 미니 진행 바', barSub: '각 사분면 헤더 아래 얇은 색상 바',
+    gaugeLabelLabel: '게이지 이름 표시', gaugeLabelSub: '원형 게이지 아래 섹션 이름',
+    addSecPlaceholder: '새 섹션 이름…', addSecBtn: '+ 추가',
+    dangerBtn: '⚠️ 전체 초기화',
+    dangerTitle: '전체 초기화 ⚠️',
+    dangerDesc: '모든 데이터가 삭제돼.\n섹션, 항목, 체크 기록, 스트릭까지 전부.',
+    dangerOk: '전부 초기화',
+    colorTitle: '섹션 색상 변경', colorHexPlaceholder: '#D4A853',
+    colorDirectLabel: '직접 입력', colorOk: '적용',
+    emojiTitle: '이모지 변경',
+    appNamePlaceholder: '앱 이름 입력…',
+    days: ['일','월','화','수','목','금','토'],
+    dateFormat: (m,d,day)=>`${m}월 ${d}일 ${day}요일`,
+    ampm: (h)=>h>=12?'오후':'오전',
+    themes: {dark:'🌙 다크', cream:'☀️ 크림 화이트', gray:'🩶 쿨 그레이', mint:'🌿 민트 그린', pink:'🌸 블러쉬 핑크'},
+    themeSubs: {dark:'지금 기본', cream:'따뜻하고 클래식', gray:'모던하고 깔끔', mint:'자연스럽고 상쾌', pink:'부드럽고 감성적'},
+    langs: {ko:'🇰🇷 한국어', en:'🇺🇸 English', es:'🇪🇸 Español'},
+  },
+  en: {
+    editBtn: '✏️', doneBtn: '✓',
+    quickAdd: 'Add / Edit items', addPlaceholder: 'New item…', addBtn: 'Add',
+    mAddTrig: '+ Add item', mAddPlaceholder: 'New item…',
+    discordBtn: '📋 Discord Post', resetBtn: '🌙 End Day',
+    loading: 'Loading...',
+    complete: (d,t)=>`${d} / ${t} done`,
+    streakUnit: ' day streak',
+    btnList: '☰', btnMatrix: '⊞',
+    discordTodo: "Today's Tasks 📋", discordDone: "Day Complete ✅",
+    tagTodo: '#todo', tagDone: '#done',
+    discordTodoHash: '#todo', discordDoneHash: '#done',
+    copyBtn: '📋 Copy', cancelBtn: 'Cancel',
+    resetTitle: "Great work today 🌙",
+    resetDesc: "This will clear today's checks.\nYour items will stay.",
+    resetOk: 'Reset',
+    toastCopied: 'Copied! Paste into Discord 🎉',
+    toastReset: (n)=>`🔥 ${n}-day streak! Keep it up!`,
+    toastAllDone: '🎉 All done! Amazing work today!',
+    toastColorChanged: 'Color updated!',
+    toastEmojiChanged: 'Emoji updated!',
+    toastSecAdded: (n)=>`Section "${n}" added!`,
+    toastSecDeleted: 'Section deleted.',
+    toastMinSec: 'You need at least one section!',
+    toastColorErr: 'Enter a valid hex code (e.g. #D4A853)',
+    toastReset2: 'All data cleared!',
+    settingAppName: 'App Name', settingTheme: 'Theme', settingViz: '🎨 Display',
+    settingSection: 'Sections', settingData: 'Data',
+    settingLang: 'Language',
+    arcLabel: 'Arc Gauges', arcSub: 'Section progress rings in matrix view',
+    barLabel: 'Mini Progress Bar', barSub: 'Thin bar below each quadrant header',
+    gaugeLabelLabel: 'Show gauge labels', gaugeLabelSub: 'Section names under arc gauges',
+    addSecPlaceholder: 'New section name…', addSecBtn: '+ Add',
+    dangerBtn: '⚠️ Reset All Data',
+    dangerTitle: 'Reset All Data ⚠️',
+    dangerDesc: 'This will delete everything.\nSections, items, history, streak — all gone.',
+    dangerOk: 'Reset Everything',
+    colorTitle: 'Change Section Color', colorHexPlaceholder: '#D4A853',
+    colorDirectLabel: 'Custom hex', colorOk: 'Apply',
+    emojiTitle: 'Change Emoji',
+    appNamePlaceholder: 'Enter app name…',
+    days: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+    dateFormat: (m,d,day)=>`${day}, ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1]} ${d}`,
+    ampm: (h)=>h>=12?'PM':'AM',
+    themes: {dark:'🌙 Dark', cream:'☀️ Cream White', gray:'🩶 Cool Gray', mint:'🌿 Mint Green', pink:'🌸 Blush Pink'},
+    themeSubs: {dark:'Default', cream:'Warm & classic', gray:'Modern & clean', mint:'Fresh & natural', pink:'Soft & cozy'},
+    langs: {ko:'🇰🇷 한국어', en:'🇺🇸 English', es:'🇪🇸 Español'},
+  },
+  es: {
+    editBtn: '✏️', doneBtn: '✓',
+    quickAdd: 'Agregar / Editar', addPlaceholder: 'Nuevo elemento…', addBtn: 'Agregar',
+    mAddTrig: '+ Agregar', mAddPlaceholder: 'Nuevo elemento…',
+    discordBtn: '📋 Publicar Discord', resetBtn: '🌙 Terminar día',
+    loading: 'Cargando...',
+    complete: (d,t)=>`${d} / ${t} completado`,
+    streakUnit: ' días seguidos',
+    btnList: '☰', btnMatrix: '⊞',
+    discordTodo: 'Tareas de hoy 📋', discordDone: 'Día completado ✅',
+    tagTodo: '#porhacer', tagDone: '#completado',
+    discordTodoHash: '#porhacer', discordDoneHash: '#completado',
+    copyBtn: '📋 Copiar', cancelBtn: 'Cancelar',
+    resetTitle: '¡Buen trabajo hoy! 🌙',
+    resetDesc: 'Se borrarán los checks de hoy.\nLos elementos quedan guardados.',
+    resetOk: 'Reiniciar',
+    toastCopied: '¡Copiado! Pégalo en Discord 🎉',
+    toastReset: (n)=>`🔥 ¡${n} días seguidos! ¡Sigue así!`,
+    toastAllDone: '🎉 ¡Todo completado! ¡Increíble!',
+    toastColorChanged: '¡Color actualizado!',
+    toastEmojiChanged: '¡Emoji actualizado!',
+    toastSecAdded: (n)=>`¡Sección "${n}" agregada!`,
+    toastSecDeleted: 'Sección eliminada.',
+    toastMinSec: '¡Necesitas al menos una sección!',
+    toastColorErr: 'Ingresa un código hex válido (ej. #D4A853)',
+    toastReset2: '¡Todos los datos eliminados!',
+    settingAppName: 'Nombre de la app', settingTheme: 'Tema', settingViz: '🎨 Pantalla',
+    settingSection: 'Secciones', settingData: 'Datos',
+    settingLang: 'Idioma',
+    arcLabel: 'Indicadores circulares', arcSub: 'Anillos de progreso en vista de matriz',
+    barLabel: 'Barra mini de progreso', barSub: 'Barra delgada bajo el encabezado',
+    gaugeLabelLabel: 'Mostrar etiquetas', gaugeLabelSub: 'Nombres de sección bajo los indicadores',
+    addSecPlaceholder: 'Nombre de sección…', addSecBtn: '+ Agregar',
+    dangerBtn: '⚠️ Borrar todo',
+    dangerTitle: 'Borrar todo ⚠️',
+    dangerDesc: 'Se eliminarán todos los datos.\nSecciones, elementos, historial y racha.',
+    dangerOk: 'Borrar todo',
+    colorTitle: 'Cambiar color de sección', colorHexPlaceholder: '#D4A853',
+    colorDirectLabel: 'Código hex personalizado', colorOk: 'Aplicar',
+    emojiTitle: 'Cambiar emoji',
+    appNamePlaceholder: 'Nombre de la app…',
+    days: ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'],
+    dateFormat: (m,d,day)=>`${day} ${d} de ${['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][m-1]}`,
+    ampm: (h)=>h>=12?'PM':'AM',
+    themes: {dark:'🌙 Oscuro', cream:'☀️ Crema', gray:'🩶 Gris frío', mint:'🌿 Verde menta', pink:'🌸 Rosa suave'},
+    themeSubs: {dark:'Por defecto', cream:'Cálido y clásico', gray:'Moderno y limpio', mint:'Fresco y natural', pink:'Suave y acogedor'},
+    langs: {ko:'🇰🇷 한국어', en:'🇺🇸 English', es:'🇪🇸 Español'},
+  },
+};
+const L=()=>LANG[curLang]||LANG.ko;
+const fmtTime=ts=>{const d=new Date(ts),h=d.getHours(),m=String(d.getMinutes()).padStart(2,'0');return `${L().ampm(h)} ${h%12||12}:${m}`;};
 
 // ══════════════════════════════════════════════════════
 //  App title
@@ -412,13 +568,57 @@ const THEMES = {
 // ══════════════════════════════════════════════════════
 //  Gear — tap=settings, hold=name edit
 // ══════════════════════════════════════════════════════
-let gearTimer=null;
 const gear=document.getElementById('gearBtn');
-gear.addEventListener('touchstart',e=>{e.preventDefault();gearTimer=setTimeout(()=>{gearTimer=null;startNameEdit();},500);},{passive:false});
-gear.addEventListener('touchend',e=>{e.preventDefault();if(gearTimer){clearTimeout(gearTimer);gearTimer=null;setView('settings');}});
+gear.addEventListener('touchend',e=>{e.preventDefault();setView('settings');});
 gear.addEventListener('click',e=>{if(!('ontouchstart' in window))setView('settings');});
 
 
+
+function applyLang(l){
+  curLang=l; LS.set('hz_lang',l);
+  // Update all static overlay/button text
+  const ids = {
+    'resetTitle':   ()=>L().resetTitle,
+    'resetDesc':    ()=>L().resetDesc.replace('\n','<br>'),
+    'resetCancel':  ()=>L().cancelBtn,
+    'resetOk':      ()=>L().resetOk,
+    'discordCancel':()=>L().cancelBtn,
+    'discordCopy':  ()=>L().copyBtn,
+    'colorTitle':   ()=>L().colorTitle,
+    'colorDirectLabel':()=>L().colorDirectLabel,
+    'colorCancel':  ()=>L().cancelBtn,
+    'colorOk':      ()=>L().colorOk,
+    'emojiTitle':   ()=>L().emojiTitle,
+    'emojiCancel':  ()=>L().cancelBtn,
+    'dangerTitle':  ()=>L().dangerTitle,
+    'dangerDesc':   ()=>L().dangerDesc.replace('\n','<br>'),
+    'dangerCancel': ()=>L().cancelBtn,
+    'dangerOk':     ()=>L().dangerOk,
+  };
+  Object.entries(ids).forEach(([id,fn])=>{
+    const el=document.getElementById(id);
+    if(el) el.innerHTML=fn();
+  });
+  // Footer buttons
+  const db=document.getElementById('discordBtn');
+  if(db) db.textContent=L().discordBtn;
+  const rb=document.getElementById('resetBtn');
+  if(rb) rb.textContent=L().resetBtn;
+  // View toggles
+  const bl=document.getElementById('btnList');
+  if(bl) bl.textContent=L().btnList;
+  const bm=document.getElementById('btnMatrix');
+  if(bm) bm.textContent=L().btnMatrix;
+  // Streak unit
+  const su=document.getElementById('streakUnit');
+  if(su) su.textContent=L().streakUnit;
+  // Update date display
+  initDate();
+  // Re-render current view to pick up new text
+  if(curView==='list') render();
+  else if(curView==='matrix') renderMatrix();
+  else if(curView==='settings') renderSettings();
+}
 
 function startNameEdit(){
   if(editingName) return; editingName=true;
@@ -595,6 +795,40 @@ function render(){
   lv.innerHTML='';
   sections.forEach(sec=>lv.appendChild(buildCard(sec)));
   updateHeader();
+  // Init section-level drag after all cards are in DOM
+  initSecDrag(lv);
+}
+
+function initSecDrag(container){
+  // Attach drag to each section drag handle
+  const cards=Array.from(container.querySelectorAll('.sec-card'));
+  cards.forEach(card=>{
+    const handle=document.getElementById('sdh_'+card.dataset.key);
+    if(!handle) return;
+    const getCards=()=>Array.from(container.querySelectorAll('.sec-card'));
+    handle.addEventListener('touchstart', e=>{
+      e.preventDefault(); e.stopPropagation();
+      if(activeDrag) return;
+      const dur='0.20s';
+      const origEls=getCards();
+      const origIdx=origEls.indexOf(card);
+      card.classList.add('is-dragging');
+      origEls.forEach(el=>{if(el!==card)el.style.transition=`transform ${dur} cubic-bezier(.25,.8,.25,1)`;});
+      activeDrag={
+        item:card, container, getItemEls:getCards, dur,
+        origIdx, insertIdx:origIdx,
+        itemH:card.offsetHeight,
+        startY:e.touches[0].clientY,
+        onCommit: newOrder=>{
+          sections=newOrder.map(id=>sections.find(s=>s.key===id)).filter(Boolean);
+          LS.set('hz_sections',sections);
+          // No re-render needed - DOM order already reflects new order
+        }
+      };
+      document.addEventListener('touchmove',onDragMove,{passive:false});
+      document.addEventListener('touchend',onDragEnd,{once:true});
+    },{passive:false});
+  });
 }
 
 function buildCard(sec){
@@ -603,10 +837,10 @@ function buildCard(sec){
   const allDone=sec.items.length>0&&doneCount===sec.items.length;
   const card=document.createElement('div');
   card.className='sec-card'+(isEditing?' editing':'')+(allDone?' all-done':'');
-  card.dataset.key=sec.key; card.style.setProperty('--col',sec.col);
+  card.dataset.key=sec.key; card.dataset.id=sec.key; card.style.setProperty('--col',sec.col);
 
   const head=document.createElement('div'); head.className='sec-head';
-  head.innerHTML=`<div class="sec-pip" style="background:${sec.col}"></div><span class="sec-emoji">${sec.emoji}</span><span class="sec-name">${esc(sec.name)}</span><span class="sec-stat" id="stat_${sec.key}">${doneCount}/${sec.items.length}</span><button class="sec-edit-btn">${isEditing?'✓ 완료':'✏️ 편집'}</button>`;
+  head.innerHTML=`<div class="sec-pip" style="background:${sec.col}"></div><span class="sec-emoji">${sec.emoji}</span><span class="sec-name">${esc(sec.name)}</span><span class="sec-stat" id="stat_${sec.key}">${doneCount}/${sec.items.length}</span><button class="sec-edit-btn">${isEditing?L().doneBtn:L().editBtn}</button>`;
   head.querySelector('.sec-edit-btn').onclick=()=>toggleEdit(sec.key);
   // Tap emoji → open emoji picker directly
   head.querySelector('.sec-emoji').addEventListener('click', e=>{
@@ -635,14 +869,17 @@ function buildCard(sec){
 
   if(isEditing){
     const ar=document.createElement('div'); ar.className='add-row';
-    ar.innerHTML=`<input class="add-input" id="addinput_${sec.key}" placeholder="새 항목 입력…" autocomplete="off"><button class="add-btn">추가</button>`;
+    ar.innerHTML=`<input class="add-input" id="addinput_${sec.key}" placeholder="${L().addPlaceholder}" autocomplete="off"><button class="add-btn">${L().addBtn}</button>`;
     ar.querySelector('.add-input').onkeydown=e=>{if(e.key==='Enter')doAdd(sec.key);};
     ar.querySelector('.add-btn').onclick=()=>doAdd(sec.key);
     card.appendChild(ar);
   } else {
     const qa=document.createElement('div'); qa.className='quick-add';
-    qa.innerHTML=`<span class="quick-plus" style="color:${sec.col}">+</span><span>항목 추가 / 편집</span>`;
-    qa.onclick=()=>toggleEdit(sec.key);
+    qa.innerHTML=`<span class="quick-plus" style="color:${sec.col}">+</span><span>${L().quickAdd}</span><div class="sec-drag-handle" id="sdh_${sec.key}">⠿</div>`;
+    // Click on + text area toggles edit, but NOT on drag handle
+    qa.addEventListener('click', e=>{
+      if(!e.target.closest('.sec-drag-handle')) toggleEdit(sec.key);
+    });
     card.appendChild(qa);
   }
   return card;
@@ -831,7 +1068,7 @@ function renderMatrix(){
     sections.forEach(sec=>{
       const done=sec.items.filter(it=>checked[it.id]).length,total=sec.items.length,pct=total?done/total:0;
       const div=document.createElement('div'); div.className='gauge-item';
-      div.innerHTML=`<div class="arc-outer"><svg class="arc-svg" viewBox="0 0 48 48"><circle class="arc-track" cx="24" cy="24" r="20"/><circle class="arc-fill" id="arc_${sec.key}" cx="24" cy="24" r="20" stroke="${sec.col}" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct)}"/></svg><div class="arc-emoji-label">${sec.emoji}</div></div><div class="gauge-nums" style="color:${sec.col}" id="gnum_${sec.key}">${done}/${total}</div><div class="gauge-name">${esc(sec.name)}</div>`;
+      div.innerHTML=`<div class="arc-outer"><svg class="arc-svg" viewBox="0 0 48 48"><circle class="arc-track" cx="24" cy="24" r="20"/><circle class="arc-fill" id="arc_${sec.key}" cx="24" cy="24" r="20" stroke="${sec.col}" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct)}"/></svg><div class="arc-emoji-label">${sec.emoji}</div></div><div class="gauge-nums" style="color:${sec.col}" id="gnum_${sec.key}">${done}/${total}</div>${settings.gaugeLabel?'<div class="gauge-name">'+esc(sec.name)+'</div>':''}`;
       gaugeRow.appendChild(div);
     });
     mv.appendChild(gaugeRow);
@@ -840,14 +1077,46 @@ function renderMatrix(){
   const grid=document.createElement('div'); grid.className='m-grid';
   sections.forEach(sec=>grid.appendChild(buildQuadCard(sec)));
   mv.appendChild(grid);
+  initMatrixSecDrag(grid);
+}
+
+function initMatrixSecDrag(grid){
+  const getCards=()=>Array.from(grid.querySelectorAll('.m-quad'));
+  getCards().forEach(card=>{
+    const handle=document.getElementById('msdh_'+card.dataset.id);
+    if(!handle) return;
+    handle.addEventListener('touchstart', e=>{
+      e.preventDefault(); e.stopPropagation();
+      if(activeDrag) return;
+      const origEls=getCards();
+      const origIdx=origEls.indexOf(card);
+      card.classList.add('is-dragging');
+      origEls.forEach(el=>{if(el!==card)el.style.transition='transform 0.20s cubic-bezier(.25,.8,.25,1)';});
+      activeDrag={
+        item:card, container:grid, getItemEls:getCards,
+        dur:'0.20s', origIdx, insertIdx:origIdx,
+        itemH:card.offsetHeight,
+        startY:e.touches[0].clientY,
+        onCommit: newOrder=>{
+          sections=newOrder.map(id=>sections.find(s=>s.key===id)).filter(Boolean);
+          LS.set('hz_sections',sections);
+          // Sync list view order
+          const lv=document.getElementById('listView');
+          if(lv) sections.forEach(s=>{const c=lv.querySelector(`.sec-card[data-key="${s.key}"]`);if(c)lv.appendChild(c);});
+        }
+      };
+      document.addEventListener('touchmove',onDragMove,{passive:false});
+      document.addEventListener('touchend',onDragEnd,{once:true});
+    },{passive:false});
+  });
 }
 
 function buildQuadCard(sec){
   const done=sec.items.filter(it=>checked[it.id]).length,total=sec.items.length,pct=total?done/total:0;
-  const card=document.createElement('div'); card.className='m-quad'; card.style.setProperty('--col',sec.col);
+  const card=document.createElement('div'); card.className='m-quad'; card.dataset.id=sec.key; card.style.setProperty('--col',sec.col);
 
   const head=document.createElement('div'); head.className='m-quad-head';
-  head.innerHTML=`<div class="m-pip" style="background:${sec.col}"></div><span class="m-quad-emoji">${sec.emoji}</span><span class="m-quad-name">${esc(sec.name)}</span><span class="m-quad-stat" id="mstat_${sec.key}">${done}/${total}</span>`;
+  head.innerHTML=`<div class="m-sec-drag" id="msdh_${sec.key}">⠿</div><div class="m-pip" style="background:${sec.col}"></div><span class="m-quad-emoji">${sec.emoji}</span><span class="m-quad-name">${esc(sec.name)}</span><span class="m-quad-stat" id="mstat_${sec.key}">${done}/${total}</span>`;
   card.appendChild(head);
 
   if(settings.miniBar){
@@ -876,11 +1145,11 @@ function buildQuadCard(sec){
   // Add row
   let isAdding=false;
   const addTrig=document.createElement('div'); addTrig.className='m-add';
-  addTrig.innerHTML=`<span style="color:${sec.col}">+</span> 항목 추가`;
+  addTrig.innerHTML=`<span style="color:${sec.col}">+</span> ${L().mAddTrig.slice(2)}`;
   addTrig.onclick=()=>{
     if(isAdding) return; isAdding=true; addTrig.style.display='none';
     const ar=document.createElement('div'); ar.className='m-add-row'; ar.style.setProperty('--col',sec.col);
-    ar.innerHTML=`<input class="m-add-input" placeholder="새 항목…" autocomplete="off"><button class="m-add-btn">추가</button>`;
+    ar.innerHTML=`<input class="m-add-input" placeholder="${L().mAddPlaceholder}" autocomplete="off"><button class="m-add-btn">${L().addBtn}</button>`;
     const inp=ar.querySelector('.m-add-input');
     const doIt=()=>{
       const txt=inp.value.trim(); if(!txt) return;
@@ -999,15 +1268,38 @@ function updateMatrixGauges(secKey){
 function renderSettings(){
   const sv=document.getElementById('settingsView'); sv.innerHTML='';
 
+  // ── App name editor ──
+  const nh=document.createElement('div'); nh.className='settings-heading'; nh.textContent=L().settingAppName;
+  const nc=document.createElement('div'); nc.className='settings-card';
+  const nr=document.createElement('div'); nr.className='settings-row';
+  nr.style.gap='10px';
+  nr.innerHTML=`
+    <div class="settings-info">
+      <input id="appNameSettingInput"
+        style="width:100%;background:none;border:none;border-bottom:1.5px solid var(--gold);
+               color:var(--text);font-family:inherit;font-size:16px;font-weight:700;
+               padding:4px 2px;outline:none;letter-spacing:-0.3px;"
+        value="${esc(appTitle)}" placeholder="${L().appNamePlaceholder}">
+    </div>`;
+  nr.querySelector('#appNameSettingInput').onchange=function(){
+    const v=this.value.trim();
+    if(v){appTitle=v;LS.set('hz_title',appTitle);renderTitle();}
+  };
+  nr.querySelector('#appNameSettingInput').onkeydown=function(e){
+    if(e.key==='Enter'){this.blur();}
+  };
+  nc.appendChild(nr);
+  const nw=document.createElement('div'); nw.className='settings-section'; nw.append(nh,nc); sv.appendChild(nw);
+
   // Theme picker
-  const th=document.createElement('div'); th.className='settings-heading'; th.textContent='테마';
+  const th=document.createElement('div'); th.className='settings-heading'; th.textContent=L().settingTheme;
   const tc=document.createElement('div'); tc.className='settings-card';
   const themes=[
-    {key:'dark',  label:'🌙 다크',        sub:'기본 (지금)'},
-    {key:'cream', label:'☀️ 크림 화이트', sub:'따뜻하고 클래식'},
-    {key:'gray',  label:'🩶 쿨 그레이',   sub:'모던하고 깔끔'},
-    {key:'mint',  label:'🌿 민트 그린',   sub:'자연스럽고 상쾌'},
-    {key:'pink',  label:'🌸 블러쉬 핑크', sub:'부드럽고 감성적'},
+    {key:'dark',  get label(){return L().themes.dark;},   get sub(){return L().themeSubs.dark;}},
+    {key:'cream', get label(){return L().themes.cream;},  get sub(){return L().themeSubs.cream;}},
+    {key:'gray',  get label(){return L().themes.gray;},   get sub(){return L().themeSubs.gray;}},
+    {key:'mint',  get label(){return L().themes.mint;},   get sub(){return L().themeSubs.mint;}},
+    {key:'pink',  get label(){return L().themes.pink;},   get sub(){return L().themeSubs.pink;}},
   ];
   themes.forEach(t=>{
     const row=document.createElement('div'); row.className='settings-row';
@@ -1026,26 +1318,46 @@ function renderSettings(){
   });
   const tw=document.createElement('div'); tw.className='settings-section'; tw.append(th,tc); sv.appendChild(tw);
 
+  // Language picker
+  const lh=document.createElement('div'); lh.className='settings-heading'; lh.textContent=L().settingLang;
+  const lc=document.createElement('div'); lc.className='settings-card';
+  const LANG_LIST=[{key:'ko',flag:'🇰🇷'},{key:'en',flag:'🇺🇸'},{key:'es',flag:'🇪🇸'}];
+  LANG_LIST.forEach(lg=>{
+    const row=document.createElement('div'); row.className='settings-row'; row.style.cursor='pointer';
+    const isActive=curLang===lg.key;
+    row.innerHTML=`
+      <div class="settings-info">
+        <div class="settings-label">${L().langs[lg.key]}</div>
+      </div>
+      <div style="width:22px;height:22px;border-radius:50%;border:2px solid ${isActive?'var(--gold)':'var(--border)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        ${isActive?'<div style="width:10px;height:10px;border-radius:50%;background:var(--gold);"></div>':''}
+      </div>`;
+    row.onclick=()=>applyLang(lg.key);
+    lc.appendChild(row);
+  });
+  const lw=document.createElement('div'); lw.className='settings-section'; lw.append(lh,lc); sv.appendChild(lw);
+
   // Viz toggles
-  sv.appendChild(createToggles('🎨 시각화',[
-    {icon:'⭕',label:'원형 게이지',sub:'매트릭스 뷰 상단 섹션별 원형 진행률',key:'arcGauge'},
-    {icon:'▬',label:'카드 미니 진행 바',sub:'각 사분면 헤더 아래 얇은 색상 바',key:'miniBar'},
+  sv.appendChild(createToggles(L().settingViz,[
+    {icon:'⭕',label:L().arcLabel,sub:L().arcSub,key:'arcGauge'},
+    {icon:'▬',label:L().barLabel,sub:L().barSub,key:'miniBar'},
+    {icon:'🏷️',label:L().gaugeLabelLabel,sub:L().gaugeLabelSub,key:'gaugeLabel'},
   ]));
 
   // Section manager
-  const sh=document.createElement('div'); sh.className='settings-heading'; sh.textContent='섹션 관리';
+  const sh=document.createElement('div'); sh.className='settings-heading'; sh.textContent=L().settingSection;
   const sc=document.createElement('div'); sc.className='settings-card'; sc.id='secMgrCard';
   sections.forEach(sec=>sc.appendChild(buildSecMgrRow(sec)));
   const asr=document.createElement('div'); asr.className='add-sec-row';
-  asr.innerHTML=`<input class="add-sec-input" id="addSecInput" placeholder="새 섹션 이름…" autocomplete="off"><button class="add-sec-btn">+ 추가</button>`;
+  asr.innerHTML=`<input class="add-sec-input" id="addSecInput" placeholder="${L().addSecPlaceholder}" autocomplete="off"><button class="add-sec-btn">${L().addSecBtn}</button>`;
   asr.querySelector('.add-sec-input').onkeydown=e=>{if(e.key==='Enter')addSection();};
   asr.querySelector('.add-sec-btn').onclick=addSection;
   sc.appendChild(asr);
   const sw=document.createElement('div'); sw.className='settings-section'; sw.append(sh,sc); sv.appendChild(sw);
 
   // Danger
-  const dh=document.createElement('div'); dh.className='settings-heading'; dh.textContent='데이터';
-  const db=document.createElement('button'); db.className='danger-btn'; db.textContent='⚠️ 전체 초기화';
+  const dh=document.createElement('div'); dh.className='settings-heading'; dh.textContent=L().settingData;
+  const db=document.createElement('button'); db.className='danger-btn'; db.textContent=L().dangerBtn;
   db.onclick=()=>document.getElementById('dangerOverlay').classList.add('show');
   const dw=document.createElement('div'); dw.className='settings-section'; dw.append(dh,db); sv.appendChild(dw);
 }
@@ -1121,17 +1433,17 @@ function addSection(){
   const newSec={key:uid('sec'),name,emoji:'⭐',col:PALETTE[sections.length%PALETTE.length],items:[]};
   sections.push(newSec); LS.set('hz_sections',sections);
   document.getElementById('secMgrCard').insertBefore(buildSecMgrRow(newSec),document.querySelector('.add-sec-row'));
-  inp.value=''; showToast(`섹션 "${name}" 추가됐어!`);
+  inp.value=''; showToast(L().toastSecAdded(name));
 }
 
 function deleteSection(key){
-  if(sections.length<=1){showToast('섹션이 하나 이상 있어야 해!');return;}
+  if(sections.length<=1){showToast(L().toastMinSec);return;}
   const sec=sections.find(s=>s.key===key);
   sec.items.forEach(it=>{delete checked[it.id];delete checkedTimes[it.id];});
   sections=sections.filter(s=>s.key!==key);
   LS.set('hz_sections',sections);LS.set('hz_checked',checked);LS.set('hz_ctimes',checkedTimes);
   document.querySelector(`.sec-mgr-item[data-key="${key}"]`)?.remove();
-  showToast('섹션 삭제됐어.');
+  showToast(L().toastSecDeleted);
 }
 
 // Color picker
@@ -1146,17 +1458,21 @@ function openColorPicker(k){
     pal.appendChild(sw);
   });
   document.getElementById('colorHexInput').value=sec.col;
-  document.getElementById('colorOverlay').classList.add('show');
+  document.getElementById('colorTitle').textContent=L().colorTitle;
+document.getElementById('colorDirectLabel').textContent=L().colorDirectLabel;
+document.getElementById('colorCancel').textContent=L().cancelBtn;
+document.getElementById('colorOk').textContent=L().colorOk;
+document.getElementById('colorOverlay').classList.add('show');
 }
 document.getElementById('colorCancel').onclick=()=>document.getElementById('colorOverlay').classList.remove('show');
 document.getElementById('colorOk').onclick=()=>{
   const hex=document.getElementById('colorHexInput').value.trim();
-  if(!hex.match(/^#[0-9a-fA-F]{3,6}$/)){showToast('올바른 색상 코드를 입력해줘 (예: #D4A853)');return;}
+  if(!hex.match(/^#[0-9a-fA-F]{3,6}$/)){showToast(L().toastColorErr);return;}
   const sec=sections.find(s=>s.key===colorTargetKey);
   if(sec){sec.col=hex;LS.set('hz_sections',sections);}
   document.querySelector(`.sec-mgr-color[data-key="${colorTargetKey}"]`)?.style.setProperty('background',hex);
   document.getElementById('colorOverlay').classList.remove('show');
-  showToast('색상 변경됐어!');
+  showToast(L().toastColorChanged);
 };
 
 // Emoji picker
@@ -1176,11 +1492,13 @@ function openEmojiPicker(k){
       const head=document.querySelector(`#listView .sec-card[data-key="${emojiTargetKey}"] .sec-emoji`);
       if(head) head.textContent=em;
       document.getElementById('emojiOverlay').classList.remove('show');
-      showToast('이모지 변경됐어!');
+      showToast(L().toastEmojiChanged);
     };
     grid.appendChild(btn);
   });
-  document.getElementById('emojiOverlay').classList.add('show');
+  document.getElementById('emojiTitle').textContent=L().emojiTitle;
+document.getElementById('emojiCancel').textContent=L().cancelBtn;
+document.getElementById('emojiOverlay').classList.add('show');
 }
 document.getElementById('emojiCancel').onclick=()=>document.getElementById('emojiOverlay').classList.remove('show');
 
@@ -1188,12 +1506,12 @@ document.getElementById('emojiCancel').onclick=()=>document.getElementById('emoj
 document.getElementById('dangerCancel').onclick=()=>document.getElementById('dangerOverlay').classList.remove('show');
 document.getElementById('dangerOk').onclick=()=>{
   sections=JSON.parse(JSON.stringify(DEFAULTS));
-  checked={};checkedTimes={};streak=0;lastReset=null;appTitle='Hazel Check';settings={arcGauge:true,miniBar:true};theme='dark';
+  checked={};checkedTimes={};streak=0;lastReset=null;appTitle='Hazel Check';settings={arcGauge:true,miniBar:true,gaugeLabel:true};
   ['hz_sections','hz_checked','hz_ctimes','hz_streak','hz_lastReset','hz_title','hz_settings','hz_theme'].forEach(k=>localStorage.removeItem(k));
   applyTheme('dark');
   document.getElementById('dangerOverlay').classList.remove('show');
   renderTitle(); document.getElementById('streakNum').textContent=0;
-  setView('list'); showToast('전체 초기화 완료!');
+  setView('list'); showToast(L().toastReset2);
 };
 
 // ══════════════════════════════════════════════════════
@@ -1233,7 +1551,7 @@ function doDelete(secKey,itemId){
 function updateHeader(){
   const all=allItems(),total=all.length,done=all.filter(it=>checked[it.id]).length;
   document.getElementById('progFill').style.width=`${total?(done/total)*100:0}%`;
-  document.getElementById('progLabel').textContent=`${done} / ${total} 완료`;
+  document.getElementById('progLabel').textContent=L().complete(done,total);
 }
 
 function updateStat(secKey){
@@ -1259,7 +1577,7 @@ document.getElementById('discordBtn').onclick=()=>{
 
   if(isTodo){
     // ── 아침: 아직 아무것도 안 했을 때 ──
-    lines.push(`${tag} #해야할일\n`);
+    lines.push(`${tag} ${L().discordTodoHash}\n`);
     sections.forEach(sec=>{
       if(!sec.items.length) return;
       lines.push(`${sec.emoji} ${sec.name}`);
@@ -1268,7 +1586,7 @@ document.getElementById('discordBtn').onclick=()=>{
     });
   } else {
     // ── 저녁: 완료한 것들 + 못한 것들 ──
-    lines.push(`${tag} #완료한일\n`);
+    lines.push(`${tag} ${L().discordDoneHash}\n`);
     sections.forEach(sec=>{
       const done=sec.items.filter(it=>checked[it.id]);
       const todo=sec.items.filter(it=>!checked[it.id]);
@@ -1282,7 +1600,7 @@ document.getElementById('discordBtn').onclick=()=>{
 
   discordMsg=lines.join('\n').trim();
   document.getElementById('sheetPreview').textContent=discordMsg;
-  document.getElementById('sheetTag').textContent=isTodo?'#해야할일':'#완료한일';
+  document.getElementById('sheetTag').textContent=isTodo?L().tagTodo:L().tagDone;
   document.getElementById('sheetTag').className='sheet-tag '+(isTodo?'tag-todo':'tag-done');
   document.getElementById('sheetTitle').textContent=isTodo?'오늘 할 일 🌅':'오늘 하루 인증 🌙';
   document.getElementById('discordOverlay').classList.add('show');
@@ -1294,7 +1612,7 @@ document.getElementById('discordCopy').onclick=async()=>{
   try{await navigator.clipboard.writeText(discordMsg);}
   catch{const ta=document.createElement('textarea');ta.value=discordMsg;ta.style.cssText='position:fixed;opacity:0;';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}
   document.getElementById('discordOverlay').classList.remove('show');
-  showToast('복사 완료! Discord에 붙여넣기 해줘 🎉');
+  showToast(L().toastCopied);
 };
 
 // ══════════════════════════════════════════════════════
@@ -1316,7 +1634,7 @@ document.getElementById('resetOk').onclick=()=>{
   document.getElementById('resetOverlay').classList.remove('show');
   editKey=null; render();
   if(curView==='matrix') renderMatrix();
-  showToast(`🔥 ${streak}일째 달성! 오늘도 수고했어`);
+  showToast(L().toastReset(streak));
 };
 
 // ══════════════════════════════════════════════════════
@@ -1329,7 +1647,7 @@ function fireConfetti(){
   const ps=Array.from({length:90},()=>({x:Math.random()*cv.width,y:-10,r:Math.random()*5+3,color:cols[~~(Math.random()*cols.length)],vx:(Math.random()-.5)*3,vy:Math.random()*3+2,rot:Math.random()*360,rotV:(Math.random()-.5)*6,shape:Math.random()>.5?'rect':'circle'}));
   let f=0;
   (function draw(){ctx.clearRect(0,0,cv.width,cv.height);ps.forEach(p=>{ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);ctx.fillStyle=p.color;p.shape==='rect'?ctx.fillRect(-p.r,-p.r/2,p.r*2,p.r):(ctx.beginPath(),ctx.arc(0,0,p.r,0,Math.PI*2),ctx.fill());ctx.restore();p.x+=p.vx;p.y+=p.vy;p.rot+=p.rotV;p.vy+=0.06;});if(++f<150)requestAnimationFrame(draw);else ctx.clearRect(0,0,cv.width,cv.height);})();
-  showToast('🎉 전부 완료! 오늘 진짜 잘했어!');
+  showToast(L().toastAllDone);
 }
 
 // ══════════════════════════════════════════════════════
@@ -1351,7 +1669,8 @@ function applyTheme(t){
 let toastTimer=null;
 function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);}
 
-function initDate(){const now=new Date(),days=['일','월','화','수','목','금','토'];document.getElementById('dateLbl').textContent=`${now.getMonth()+1}월 ${now.getDate()}일 ${days[now.getDay()]}요일`;}
+function initDate(){const now=new Date();const _days=L().days;
+  document.getElementById('dateLbl').textContent=L().dateFormat(now.getMonth()+1,now.getDate(),_days[now.getDay()]);}
 
 function initStreak(){
   if(lastReset){const d=dayDiff(lastReset,todayStr());if(d>1){streak=0;LS.set('hz_streak',streak);}}
@@ -1366,7 +1685,7 @@ function initStreak(){
 // ══════════════════════════════════════════════════════
 //  Init
 // ══════════════════════════════════════════════════════
-initDate(); initStreak(); renderTitle(); applyTheme(curTheme); setView('list');
+initDate(); initStreak(); renderTitle(); applyTheme(curTheme); applyLang(curLang); setView('list');
 </script>
 </body>
 </html>
