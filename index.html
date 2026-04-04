@@ -1585,15 +1585,13 @@ document.getElementById('discordBtn').onclick=()=>{
       lines.push('');
     });
   } else {
-    // ── 저녁: 완료한 것들 + 못한 것들 ──
+    // ── 저녁: 완료한 것들만 ──
     lines.push(`${tag} ${L().discordDoneHash}\n`);
     sections.forEach(sec=>{
       const done=sec.items.filter(it=>checked[it.id]);
-      const todo=sec.items.filter(it=>!checked[it.id]);
-      if(!done.length&&!todo.length) return;
+      if(!done.length) return;
       lines.push(`${sec.emoji} ${sec.name}`);
       done.forEach(it=>lines.push(`✅ ${it.text}`));
-      todo.forEach(it=>lines.push(`• ${it.text}`));
       lines.push('');
     });
   }
