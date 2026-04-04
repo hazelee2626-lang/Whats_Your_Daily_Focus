@@ -15,6 +15,51 @@
       --text:#EEE8DC; --dim:#9A8E7E; --faint:#5A5248; --border:#2B2720;
       --gold:#D4A853; --discord:#5865F2;
     }
+    /* ── Themes ── */
+    [data-theme="cream"] {
+      --bg:#FDFAF4; --surface:#FFFFFF; --surf2:#F0EDE6; --surf3:#EAE7E0;
+      --text:#2C2420; --dim:#9A9690; --faint:#C0BCB8; --border:#E0DCD4;
+    }
+    [data-theme="gray"] {
+      --bg:#F4F4F6; --surface:#FFFFFF; --surf2:#E8E8EE; --surf3:#E0E0E8;
+      --text:#1A1A2E; --dim:#8888A0; --faint:#B8B8CC; --border:#DCDDE2;
+    }
+    [data-theme="mint"] {
+      --bg:#F0F7F4; --surface:#FFFFFF; --surf2:#DEF0E8; --surf3:#D4E8E0;
+      --text:#1A2E28; --dim:#6A9080; --faint:#A8C4BC; --border:#C8E0D4;
+    }
+    [data-theme="pink"] {
+      --bg:#FDF4F4; --surface:#FFFFFF; --surf2:#F0DEDE; --surf3:#E8D4D4;
+      --text:#2E1A1A; --dim:#907070; --faint:#C4A8A8; --border:#EAD4D4;
+    }
+    /* progress bar stays gold in all themes */
+    .prog-fill { background: linear-gradient(90deg,#D4A853,#C4898B) !important; }
+    /* Theme overrides — applied via data-theme on <html> */
+    [data-theme="cream"] {
+      --bg:#FDFAF4; --surface:#FFFFFF; --surf2:#F0EDE6; --surf3:#E8E4DC;
+      --text:#2C2420; --dim:#9A9690; --faint:#C0BCB6; --border:#E0DCD4;
+    }
+    [data-theme="gray"] {
+      --bg:#F4F4F6; --surface:#FFFFFF; --surf2:#E8E8EE; --surf3:#E0E0E8;
+      --text:#1A1A2E; --dim:#8888A0; --faint:#C0C0D0; --border:#DCDDE2;
+    }
+    [data-theme="mint"] {
+      --bg:#F0F7F4; --surface:#FFFFFF; --surf2:#DEF0E8; --surf3:#D0E8E0;
+      --text:#1A2E28; --dim:#6A9080; --faint:#A8C8C0; --border:#C8E0D4;
+    }
+    [data-theme="pink"] {
+      --bg:#FDF4F4; --surface:#FFFFFF; --surf2:#F0DEDE; --surf3:#E8D4D4;
+      --text:#2E1A1A; --dim:#907070; --faint:#C8A8A8; --border:#EAD4D4;
+    }
+    /* Light themes: dark text on light bg needs inverted streak/toggle */
+    [data-theme="cream"] .streak-pill,
+    [data-theme="gray"]  .streak-pill,
+    [data-theme="mint"]  .streak-pill,
+    [data-theme="pink"]  .streak-pill { background:rgba(212,168,83,.15); border-color:rgba(212,168,83,.35); }
+    [data-theme="cream"] .is-dragging,
+    [data-theme="gray"]  .is-dragging,
+    [data-theme="mint"]  .is-dragging,
+    [data-theme="pink"]  .is-dragging { box-shadow:0 8px 24px rgba(0,0,0,.15); }
 
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
     body{background:var(--bg);color:var(--text);font-family:'Pretendard Variable','Pretendard',-apple-system,sans-serif;min-height:100svh;padding-bottom:calc(150px + env(safe-area-inset-bottom));overflow-x:hidden;}
@@ -50,7 +95,7 @@
     .sec-card{background:var(--surface);border-radius:18px;overflow:hidden;}
     .sec-head{display:flex;align-items:center;gap:9px;padding:13px 12px 11px 16px;}
     .sec-pip{width:3px;height:16px;border-radius:2px;flex-shrink:0;}
-    .sec-emoji{font-size:15px;}
+    .sec-emoji{font-size:15px;cursor:pointer;touch-action:manipulation;transition:transform .15s;}
     .sec-name{font-size:13px;font-weight:600;flex:1;}
     .sec-stat{font-size:11px;color:var(--dim);margin-right:5px;}
     .sec-edit-btn{background:var(--surf2);border:1px solid var(--border);border-radius:20px;font-family:inherit;font-size:12px;font-weight:500;color:var(--dim);cursor:pointer;padding:5px 11px;transition:background .15s,color .15s,border-color .15s;}
@@ -299,10 +344,10 @@
 const PALETTE=['#D4A853','#C4898B','#7BAE8C','#7B9FC4','#9B8DC4','#C4A87B','#7BC4B4','#C47B9B','#A8C47B','#7B9BC4','#D48053','#8CC47B'];
 const EMOJIS=['💼','📚','🌿','🔥','⭐','🎯','💡','🏃','🎨','📝','🎵','🌸','🍀','💪','🧘','📖','✏️','🌙','☀️','🌈','🦋','🌺','🍎','🎉'];
 const DEFAULTS=[
-  {key:'work',name:'업무',emoji:'💼',col:'#D4A853',items:[{id:'w1',text:'시재 확인'},{id:'w2',text:'직원 스케줄 확인'},{id:'w3',text:'인벤토리 체크'},{id:'w4',text:'발주 확인'}]},
-  {key:'growth',name:'자기계발',emoji:'📚',col:'#7BAE8C',items:[{id:'g1',text:'영어 단어 공부'},{id:'g2',text:'독서 / 아티클 읽기'},{id:'g3',text:'Claude랑 공부'}]},
-  {key:'routine',name:'일상·루틴',emoji:'🌿',col:'#C4898B',items:[{id:'r1',text:'물 2L 마시기'},{id:'r2',text:'운동'},{id:'r3',text:'스킨케어'},{id:'r4',text:'Willow & Koi 산책'}]},
-  {key:'challenge',name:'기타',emoji:'🔥',col:'#7B9FC4',items:[{id:'c1',text:'디스코드 인증'}]}
+  {key:'work',    name:'Work',    emoji:'💼', col:'#D4A853', items:[]},
+  {key:'growth',  name:'1%',      emoji:'📈', col:'#7BAE8C', items:[]},
+  {key:'routine', name:'일상·루틴',emoji:'🌿', col:'#C4898B', items:[]},
+  {key:'challenge',name:'기타',   emoji:'🔥', col:'#7B9FC4', items:[]}
 ];
 
 // ══════════════════════════════════════════════════════
@@ -323,6 +368,7 @@ let streak      =LS.get('hz_streak',0);
 let lastReset   =LS.get('hz_lastReset',null);
 let appTitle    =LS.get('hz_title','Hazel Check');
 let settings    =LS.get('hz_settings',{arcGauge:true,miniBar:true});
+let curTheme    =LS.get('hz_theme','dark');
 let editKey     =null;
 let curView     ='list';
 let editingName =false;
@@ -351,6 +397,19 @@ function renderTitle(){
 }
 
 // ══════════════════════════════════════════════════════
+//  Theme engine
+// ══════════════════════════════════════════════════════
+const THEMES = {
+  dark:  {bg:'#12100B',surface:'#1B1813',surf2:'#232018',surf3:'#2A2620',text:'#EEE8DC',dim:'#9A8E7E',faint:'#5A5248',border:'#2B2720'},
+  cream: {bg:'#FDFAF4',surface:'#FFFFFF',surf2:'#F0EDE6',surf3:'#E8E4DC',text:'#2C2420',dim:'#9A9690',faint:'#C0BCB6',border:'#E0DCD4'},
+  gray:  {bg:'#F4F4F6',surface:'#FFFFFF',surf2:'#E8E8EE',surf3:'#DCDDE2',text:'#1A1A2E',dim:'#8888A0',faint:'#C0C0C8',border:'#DCDDE2'},
+  mint:  {bg:'#F0F7F4',surface:'#FFFFFF',surf2:'#DEF0E8',surf3:'#D0E8E0',text:'#1A2E28',dim:'#6A9080',faint:'#A0C0B8',border:'#C8E0D4'},
+  pink:  {bg:'#FDF4F4',surface:'#FFFFFF',surf2:'#F0DEDE',surf3:'#E8D0D0',text:'#2E1A1A',dim:'#907070',faint:'#C0A0A0',border:'#EAD4D4'},
+};
+
+
+
+// ══════════════════════════════════════════════════════
 //  Gear — tap=settings, hold=name edit
 // ══════════════════════════════════════════════════════
 let gearTimer=null;
@@ -358,6 +417,8 @@ const gear=document.getElementById('gearBtn');
 gear.addEventListener('touchstart',e=>{e.preventDefault();gearTimer=setTimeout(()=>{gearTimer=null;startNameEdit();},500);},{passive:false});
 gear.addEventListener('touchend',e=>{e.preventDefault();if(gearTimer){clearTimeout(gearTimer);gearTimer=null;setView('settings');}});
 gear.addEventListener('click',e=>{if(!('ontouchstart' in window))setView('settings');});
+
+
 
 function startNameEdit(){
   if(editingName) return; editingName=true;
@@ -547,6 +608,15 @@ function buildCard(sec){
   const head=document.createElement('div'); head.className='sec-head';
   head.innerHTML=`<div class="sec-pip" style="background:${sec.col}"></div><span class="sec-emoji">${sec.emoji}</span><span class="sec-name">${esc(sec.name)}</span><span class="sec-stat" id="stat_${sec.key}">${doneCount}/${sec.items.length}</span><button class="sec-edit-btn">${isEditing?'✓ 완료':'✏️ 편집'}</button>`;
   head.querySelector('.sec-edit-btn').onclick=()=>toggleEdit(sec.key);
+  // Tap emoji → open emoji picker directly
+  head.querySelector('.sec-emoji').addEventListener('click', e=>{
+    e.stopPropagation();
+    openEmojiPicker(sec.key);
+  });
+  head.querySelector('.sec-emoji').addEventListener('touchend', e=>{
+    e.preventDefault(); e.stopPropagation();
+    openEmojiPicker(sec.key);
+  }, {passive:false});
 
   const divider=document.createElement('div'); divider.className='sec-divider';
   const DUR_MAP={work:'0.20s',growth:'0.20s',routine:'0.20s',challenge:'0.20s'};
@@ -929,6 +999,33 @@ function updateMatrixGauges(secKey){
 function renderSettings(){
   const sv=document.getElementById('settingsView'); sv.innerHTML='';
 
+  // Theme picker
+  const th=document.createElement('div'); th.className='settings-heading'; th.textContent='테마';
+  const tc=document.createElement('div'); tc.className='settings-card';
+  const themes=[
+    {key:'dark',  label:'🌙 다크',        sub:'기본 (지금)'},
+    {key:'cream', label:'☀️ 크림 화이트', sub:'따뜻하고 클래식'},
+    {key:'gray',  label:'🩶 쿨 그레이',   sub:'모던하고 깔끔'},
+    {key:'mint',  label:'🌿 민트 그린',   sub:'자연스럽고 상쾌'},
+    {key:'pink',  label:'🌸 블러쉬 핑크', sub:'부드럽고 감성적'},
+  ];
+  themes.forEach(t=>{
+    const row=document.createElement('div'); row.className='settings-row';
+    row.style.cursor='pointer';
+    const isActive=curTheme===t.key;
+    row.innerHTML=`
+      <div class="settings-info">
+        <div class="settings-label">${t.label}</div>
+        <div class="settings-sub">${t.sub}</div>
+      </div>
+      <div style="width:22px;height:22px;border-radius:50%;border:2px solid ${isActive?'var(--gold)':'var(--border)'};display:flex;align-items:center;justify-content:center;">
+        ${isActive?'<div style="width:10px;height:10px;border-radius:50%;background:var(--gold);"></div>':''}
+      </div>`;
+    row.onclick=()=>{applyTheme(t.key);renderSettings();};
+    tc.appendChild(row);
+  });
+  const tw=document.createElement('div'); tw.className='settings-section'; tw.append(th,tc); sv.appendChild(tw);
+
   // Viz toggles
   sv.appendChild(createToggles('🎨 시각화',[
     {icon:'⭕',label:'원형 게이지',sub:'매트릭스 뷰 상단 섹션별 원형 진행률',key:'arcGauge'},
@@ -951,6 +1048,49 @@ function renderSettings(){
   const db=document.createElement('button'); db.className='danger-btn'; db.textContent='⚠️ 전체 초기화';
   db.onclick=()=>document.getElementById('dangerOverlay').classList.add('show');
   const dw=document.createElement('div'); dw.className='settings-section'; dw.append(dh,db); sv.appendChild(dw);
+}
+
+function buildThemePicker(){
+  const THEMES=[
+    {id:'dark',  emoji:'🌙', label:'다크',         sub:'지금 기본'},
+    {id:'cream', emoji:'☀️', label:'크림 화이트',   sub:'따뜻하고 클래식'},
+    {id:'gray',  emoji:'🩶', label:'쿨 그레이',     sub:'모던하고 깔끔'},
+    {id:'mint',  emoji:'🌿', label:'민트 그린',     sub:'자연스럽고 상쾌'},
+    {id:'pink',  emoji:'🌸', label:'블러쉬 핑크',   sub:'부드럽고 따뜻'},
+  ];
+  const h=document.createElement('div'); h.className='settings-heading'; h.textContent='🎨 테마';
+  const card=document.createElement('div'); card.className='settings-card';
+
+  THEME_LIST.forEach(t=>{
+    const row=document.createElement('div'); row.className='settings-row';
+    row.style.cursor='pointer'; row.style.transition='background .15s';
+    const isActive=theme===t.id;
+    row.innerHTML=`
+      <div class="settings-icon" style="font-size:16px">${t.emoji}</div>
+      <div class="settings-info">
+        <div class="settings-label">${t.label}</div>
+        <div class="settings-sub">${t.sub}</div>
+      </div>
+      <div style="width:20px;height:20px;border-radius:50%;border:2px solid ${isActive?'var(--gold)':'var(--border)'};background:${isActive?'var(--gold)':'transparent'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;" id="themeDot_${t.id}">
+        ${isActive?'<div style="width:8px;height:8px;border-radius:50%;background:var(--bg);"></div>':''}
+      </div>`;
+    row.onclick=()=>{
+      applyTheme(t.id);
+      // Update dots
+      THEMES.forEach(x=>{
+        const dot=document.getElementById('themeDot_'+x.id);
+        if(!dot) return;
+        const active=x.id===t.id;
+        dot.style.borderColor=active?'var(--gold)':'var(--border)';
+        dot.style.background=active?'var(--gold)':'transparent';
+        dot.innerHTML=active?'<div style="width:8px;height:8px;border-radius:50%;background:var(--bg);"></div>':'';
+      });
+    };
+    card.appendChild(row);
+  });
+
+  const wrap=document.createElement('div'); wrap.className='settings-section'; wrap.append(h,card);
+  return wrap;
 }
 
 function createToggles(title,rows){
@@ -1029,7 +1169,12 @@ function openEmojiPicker(k){
     btn.onclick=()=>{
       const sec=sections.find(s=>s.key===emojiTargetKey);
       if(sec){sec.emoji=em;LS.set('hz_sections',sections);}
-      document.querySelector(`.sec-mgr-emoji[data-key="${emojiTargetKey}"]`).textContent=em;
+      // Update settings row emoji
+      const mgr=document.querySelector(`.sec-mgr-emoji[data-key="${emojiTargetKey}"]`);
+      if(mgr) mgr.textContent=em;
+      // Update list view sec-head emoji
+      const head=document.querySelector(`#listView .sec-card[data-key="${emojiTargetKey}"] .sec-emoji`);
+      if(head) head.textContent=em;
       document.getElementById('emojiOverlay').classList.remove('show');
       showToast('이모지 변경됐어!');
     };
@@ -1043,8 +1188,9 @@ document.getElementById('emojiCancel').onclick=()=>document.getElementById('emoj
 document.getElementById('dangerCancel').onclick=()=>document.getElementById('dangerOverlay').classList.remove('show');
 document.getElementById('dangerOk').onclick=()=>{
   sections=JSON.parse(JSON.stringify(DEFAULTS));
-  checked={};checkedTimes={};streak=0;lastReset=null;appTitle='Hazel Check';settings={arcGauge:true,miniBar:true};
-  ['hz_sections','hz_checked','hz_ctimes','hz_streak','hz_lastReset','hz_title','hz_settings'].forEach(k=>localStorage.removeItem(k));
+  checked={};checkedTimes={};streak=0;lastReset=null;appTitle='Hazel Check';settings={arcGauge:true,miniBar:true};theme='dark';
+  ['hz_sections','hz_checked','hz_ctimes','hz_streak','hz_lastReset','hz_title','hz_settings','hz_theme'].forEach(k=>localStorage.removeItem(k));
+  applyTheme('dark');
   document.getElementById('dangerOverlay').classList.remove('show');
   renderTitle(); document.getElementById('streakNum').textContent=0;
   setView('list'); showToast('전체 초기화 완료!');
@@ -1189,6 +1335,19 @@ function fireConfetti(){
 // ══════════════════════════════════════════════════════
 //  Toast / Date / Streak init
 // ══════════════════════════════════════════════════════
+function applyTheme(t){
+  curTheme=t; LS.set('hz_theme',t);
+  // CSS data-theme attribute (for [data-theme] CSS rules)
+  document.documentElement.dataset.theme = t==='dark' ? '' : t;
+  // Also apply inline CSS vars directly (fallback for any env)
+  const T=THEMES[t]||THEMES.dark;
+  const r=document.documentElement.style;
+  Object.entries({
+    '--bg':T.bg,'--surface':T.surface,'--surf2':T.surf2,'--surf3':T.surf3,
+    '--text':T.text,'--dim':T.dim,'--faint':T.faint,'--border':T.border
+  }).forEach(([k,v])=>r.setProperty(k,v));
+}
+
 let toastTimer=null;
 function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);}
 
@@ -1207,7 +1366,7 @@ function initStreak(){
 // ══════════════════════════════════════════════════════
 //  Init
 // ══════════════════════════════════════════════════════
-initDate(); initStreak(); renderTitle(); setView('list');
+initDate(); initStreak(); renderTitle(); applyTheme(curTheme); setView('list');
 </script>
 </body>
 </html>
