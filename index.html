@@ -1319,6 +1319,15 @@ function initStreak(){if(lastReset){const d=dayDiff(lastReset,todayStr());if(d>1
   el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('show');});
 });
 
+// ── Page Visibility: 탭이 다시 활성화되면 리스너 재연결 ──
+// 사파리가 백그라운드에서 탭을 재워버려 리스너가 끊기는 문제 해결
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && currentUser) {
+    startRealtimeSync(); // 리스너 재연결 → 놓친 변경사항 즉시 수신
+    showSyncStatus('🔄 재연결됨');
+  }
+});
+
 // ── Init ──
 initDate();initStreak();renderTitle();applyTheme(curTheme);applyLang(curLang);setView('list');
 </script>
