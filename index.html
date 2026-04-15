@@ -281,6 +281,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const WORKER_URL = "https://hazel-notion-proxy.hazelee-2626.workers.dev";
 const auth = getAuth(app);
 const db = getDatabase(app);
 
@@ -293,18 +294,38 @@ const unsubscribers = []; // 리스너 해제용
 // ══════════════════════════════════════════════════════
 
 // 체크 상태 1개만 쓰기
+// 체크 상태 Firebase & Notion 동시 쓰기
 async function fbWriteCheck(itemId, isChecked, timestamp) {
-  if (!currentUser) return;
-  try {
-    const uid = currentUser.uid;
-    if (isChecked) {
-      await set(ref(db, `users/${uid}/checked/${itemId}`), true);
-      await set(ref(db, `users/${uid}/checkedTimes/${itemId}`), timestamp);
-    } else {
-      await remove(ref(db, `users/${uid}/checked/${itemId}`));
-      await remove(ref(db, `users/${uid}/checkedTimes/${itemId}`));
+    if (!currentUser) return;
+    try {
+        const uid = currentUser.uid;
+        // 1. Firebase 업데이트
+        if (isChecked) {
+            await set(ref(db, `users/${uid}/checked/${itemId}`), true);
+            await set(ref(db, `users/${uid}/checkedTimes/${itemId}`), timestamp);
+        } else {
+            await remove(ref(db, `users/${uid}/checked/${itemId}`));
+            await remove(ref(db, `users/${uid}/checkedTimes/${itemId}`));
+        }
+
+        // 2. Notion 업데이트 (추가된 부분)
+        // 먼저 이 아이템에 연결된 Notion Page ID가 있는지 확인해
+        const snapshot = await get(ref(db, `users/${uid}/notionIds/${itemId}`));
+        const pageId = snapshot.val();
+
+        if (pageId) {
+            fetch(`${WORKER_URL}/update`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pageId: pageId, completed: isChecked })
+            });
+        }
+    } catch (e) { 
+        console.error(e);
+        showSyncStatus('△ 저장 실패'); 
     }
-  } catch(e) { showSyncStatus('⚠ 저장 실패'); }
+}
+
 }
 
 // 섹션 구조 전체 쓰기 (항목 추가/삭제/순서변경/이름변경)
