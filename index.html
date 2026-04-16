@@ -984,7 +984,7 @@ function buildQuadCard(sec){
       const txt=inp.value.trim();if(!txt) return;
       const newId=uid(sec.key);sec.items.push({id:newId,text:txt});LS.set('hz_sections',sections);
       fbWriteSections(); // ← 항목 추가 → sections 경로만
-      addToNotion(txt, sec.name, newId); // ← 이 줄을 새로 추가!
+      addToNotion(txt, sec.name, newId); // ← Notion 동기화
       items.appendChild(buildMItem(sec,{id:newId,text:txt}));
       inp.value='';inp.focus();updateStat(sec.key);updateHeader();updateMatrixGauges(sec.key);
     };
@@ -1238,8 +1238,7 @@ function doAdd(secKey){
   const sec=sections.find(s=>s.key===secKey);
   const newId=uid(secKey);sec.items.push({id:newId,text});LS.set('hz_sections',sections);
   fbWriteSections(); // ← sections 경로만
-      // Notion에도 생성 (추가)
-      addToNotion(text, sec.name, newId);
+  addToNotion(text, sec.name, newId); // ← Notion 동기화
   const ul=document.getElementById(`list_${secKey}`);
   if(ul){
     const li=buildItem(sec,{id:newId,text},true);ul.appendChild(li);
@@ -1361,6 +1360,32 @@ function initStreak(){if(lastReset){const d=dayDiff(lastReset,todayStr());if(d>1
   const el=document.getElementById(id);
   el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('show');});
 });
+
+
+// ══════════════════════════════════════════════════════
+//  Notion 연동 — Worker를 통한 항목 생성/업데이트
+// ══════════════════════════════════════════════════════
+async function addToNotion(text, sectionName, itemId) {
+  if (!currentUser || !WORKER_URL) return;
+  try {
+    const res = await fetch(`${WORKER_URL}/create`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: text, section: sectionName, itemId })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      // Notion pageId를 Firebase에 저장해두면 나중에 체크 시 업데이트 가능
+      if (data.pageId && currentUser) {
+        set(ref(db, `users/${currentUser.uid}/notionIds/${itemId}`), data.pageId)
+          .catch(() => {});
+      }
+    }
+  } catch(e) {
+    // Worker 미연결 시 조용히 무시 — 앱 동작에 영향 없음
+    console.log('Notion sync skipped:', e.message);
+  }
+}
 
 // ── Page Visibility: 탭이 다시 활성화되면 리스너 재연결 ──
 // 사파리가 백그라운드에서 탭을 재워버려 리스너가 끊기는 문제 해결
