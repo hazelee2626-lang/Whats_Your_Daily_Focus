@@ -281,7 +281,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const WORKER_URL = 'https://hazel-notion-proxy.hazelee-2626.workers.dev';// Notion 프록시
+const WORKER_URL = 'https://hazel-notion-proxy.hazelee-2626.workers.dev'; // Notion 프록시
 const auth = getAuth(app);
 const db = getDatabase(app);
 
@@ -510,9 +510,11 @@ onAuthStateChanged(auth, user => {
   if (user) {
     if (btn) { btn.textContent = '로그아웃'; btn.style.color = 'var(--gold)'; }
     startRealtimeSync();
+    startNotionSync(); // ← Notion 폴링 시작
   } else {
     if (btn) { btn.textContent = '🔑 Google 로그인'; btn.style.color = 'var(--dim)'; }
     stopRealtimeSync();
+    stopNotionSync(); // ← Notion 폴링 중지
   }
 });
 
@@ -1253,11 +1255,23 @@ function doDelete(secKey,itemId){
   sec.items=sec.items.filter(it=>it.id!==itemId);
   delete checked[itemId];delete checkedTimes[itemId];
   LS.set('hz_sections',sections);LS.set('hz_checked',checked);LS.set('hz_ctimes',checkedTimes);
-  fbWriteSections(); // ← sections 경로만
-  // checked 경로에서도 제거
+  fbWriteSections();
   if(currentUser){
-    remove(ref(db,`users/${currentUser.uid}/checked/${itemId}`));
-    remove(ref(db,`users/${currentUser.uid}/checkedTimes/${itemId}`));
+    const uid=currentUser.uid;
+    remove(ref(db,`users/${uid}/checked/${itemId}`));
+    remove(ref(db,`users/${uid}/checkedTimes/${itemId}`));
+    // Notion에서도 삭제
+    get(ref(db,`users/${uid}/notionIds/${itemId}`)).then(snap=>{
+      const pageId=snap.val();
+      if(pageId){
+        fetch(`${WORKER_URL}/delete`,{
+          method:'DELETE',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({pageId})
+        }).catch(()=>{});
+        remove(ref(db,`users/${uid}/notionIds/${itemId}`));
+      }
+    }).catch(()=>{});
   }
   document.querySelector(`.item-li[data-id="${itemId}"]`)?.remove();
   updateStat(secKey);updateHeader();
@@ -1387,11 +1401,124 @@ async function addToNotion(text, sectionName, itemId) {
   }
 }
 
+
+// ══════════════════════════════════════════════════════
+//  Notion → 웹 동기화 (폴링 방식, 60초마다)
+//  Notion에서 추가/삭제/체크 변경을 감지해서 웹에 반영
+// ══════════════════════════════════════════════════════
+let notionPollTimer = null;
+
+async function pollNotionSync() {
+  if (!currentUser || !WORKER_URL) return;
+  try {
+    const res = await fetch(`${WORKER_URL}/list`);
+    if (!res.ok) return;
+    const data = await res.json();
+    const notionPages = data.pages || [];
+
+    // notionIds 맵 가져오기
+    const snap = await get(ref(db, `users/${currentUser.uid}/notionIds`));
+    const notionIds = snap.val() || {}; // { itemId: pageId }
+    // 역방향 맵: pageId → itemId
+    const pageToItem = {};
+    Object.entries(notionIds).forEach(([itemId, pageId]) => { pageToItem[pageId] = itemId; });
+
+    // 현재 웹 아이템 목록
+    const allWebItems = allItems();
+    const webItemIds = new Set(allWebItems.map(it => it.id));
+
+    let sectionsChanged = false;
+    let checkedChanged = false;
+
+    for (const page of notionPages) {
+      const pageId = page.id;
+      const title = page.title;
+      const isChecked = page.checked;
+      const sectionName = page.section || '';
+      const existingItemId = pageToItem[pageId];
+
+      if (existingItemId) {
+        // 이미 연결된 아이템 — 체크 상태만 동기화
+        const wasChecked = !!checked[existingItemId];
+        if (isChecked !== wasChecked) {
+          if (isChecked) {
+            checked[existingItemId] = true;
+            checkedTimes[existingItemId] = Date.now();
+          } else {
+            delete checked[existingItemId];
+            delete checkedTimes[existingItemId];
+          }
+          checkedChanged = true;
+          // Firebase 체크 상태 동기화
+          fbWriteCheck(existingItemId, isChecked, checkedTimes[existingItemId] || 0);
+        }
+      } else {
+        // 노션에서 새로 추가된 항목 — 웹에 추가
+        const targetSec = sections.find(s => s.name === sectionName) || sections[0];
+        if (targetSec) {
+          const newId = uid('notion');
+          targetSec.items.push({ id: newId, text: title });
+          // notionId 매핑 저장
+          set(ref(db, `users/${currentUser.uid}/notionIds/${newId}`), pageId).catch(() => {});
+          sectionsChanged = true;
+        }
+      }
+    }
+
+    // 노션에서 삭제된 항목 감지 (notionIds에 있는데 Notion 목록에 없는 경우)
+    const notionPageIds = new Set(notionPages.map(p => p.id));
+    for (const [itemId, pageId] of Object.entries(notionIds)) {
+      if (!notionPageIds.has(pageId) && webItemIds.has(itemId)) {
+        // Notion에서 삭제됨 → 웹에서도 삭제
+        sections.forEach(sec => {
+          sec.items = sec.items.filter(it => it.id !== itemId);
+        });
+        delete checked[itemId];
+        delete checkedTimes[itemId];
+        remove(ref(db, `users/${currentUser.uid}/notionIds/${itemId}`)).catch(() => {});
+        remove(ref(db, `users/${currentUser.uid}/checked/${itemId}`)).catch(() => {});
+        sectionsChanged = true;
+        checkedChanged = true;
+        document.querySelector(`.item-li[data-id="${itemId}"]`)?.remove();
+        document.querySelector(`.m-item[data-id="${itemId}"]`)?.remove();
+      }
+    }
+
+    if (sectionsChanged) {
+      LS.set('hz_sections', sections);
+      fbWriteSections();
+      if (curView === 'list') render();
+      else if (curView === 'matrix') renderMatrix();
+      updateHeader();
+    }
+    if (checkedChanged) {
+      LS.set('hz_checked', checked);
+      LS.set('hz_ctimes', checkedTimes);
+      applyCheckToDOM();
+      sections.forEach(s => updateStat(s.key));
+      updateHeader();
+    }
+  } catch(e) {
+    console.log('Notion poll skipped:', e.message);
+  }
+}
+
+function startNotionSync() {
+  stopNotionSync();
+  pollNotionSync(); // 즉시 한 번 실행
+  notionPollTimer = setInterval(pollNotionSync, 60000); // 60초마다
+}
+
+function stopNotionSync() {
+  if (notionPollTimer) { clearInterval(notionPollTimer); notionPollTimer = null; }
+}
+
 // ── Page Visibility: 탭이 다시 활성화되면 리스너 재연결 ──
 // 사파리가 백그라운드에서 탭을 재워버려 리스너가 끊기는 문제 해결
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible' && currentUser) {
-    startRealtimeSync(); // 리스너 재연결 → 놓친 변경사항 즉시 수신
+    startRealtimeSync();
+    pollNotionSync(); // 백그라운드에서 놓친 Notion 변경 즉시 체크
     showSyncStatus('🔄 재연결됨');
   }
 });
