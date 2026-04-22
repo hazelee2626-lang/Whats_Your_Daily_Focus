@@ -1533,12 +1533,27 @@ function openPlanOverlay() {
       el.dataset.secKey = sec.key;
       el.dataset.itemId = item.id;
       el.innerHTML = `<div class="plan-check">${isSelected ? '✓' : ''}</div><span class="plan-label">${esc(item.text)}</span>`;
-      const toggle = () => {
+      // 스크롤과 탭 구분 — 이동거리 10px 이상이면 스크롤로 간주
+      let _touchStartY = 0, _touchStartX = 0;
+      el.addEventListener('touchstart', e => {
+        _touchStartY = e.touches[0].clientY;
+        _touchStartX = e.touches[0].clientX;
+      }, {passive: true});
+      el.addEventListener('touchend', e => {
+        const dy = Math.abs(e.changedTouches[0].clientY - _touchStartY);
+        const dx = Math.abs(e.changedTouches[0].clientX - _touchStartX);
+        if (dy > 10 || dx > 10) return; // 스크롤이면 무시
+        e.preventDefault();
         el.classList.toggle('selected');
         el.querySelector('.plan-check').textContent = el.classList.contains('selected') ? '✓' : '';
-      };
-      el.addEventListener('click', toggle);
-      el.addEventListener('touchend', e => { e.preventDefault(); toggle(); }, {passive:false});
+      }, {passive: false});
+      el.addEventListener('click', () => {
+        // 마우스 클릭용 (touch에서는 위에서 처리)
+        if (!('ontouchstart' in window)) {
+          el.classList.toggle('selected');
+          el.querySelector('.plan-check').textContent = el.classList.contains('selected') ? '✓' : '';
+        }
+      });
       itemsDiv.appendChild(el);
     });
 
