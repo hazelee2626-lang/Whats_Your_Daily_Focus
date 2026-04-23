@@ -1051,8 +1051,14 @@ function buildQuadCard(sec){
     const doIt=()=>{
       const txt=inp.value.trim();if(!txt) return;
       const newId=uid(sec.key);sec.items.push({id:newId,text:txt});LS.set('hz_sections',sections);
-      fbWriteSections(); // ← 항목 추가 → sections 경로만
-      addToNotion(txt, sec.name, newId); // ← Notion 동기화
+      // 오늘 플래닝 활성화 중이면 새 항목도 선택에 추가
+      if (todayPlan && todayPlan.selected) {
+        if (!todayPlan.selected[sec.key]) todayPlan.selected[sec.key] = [];
+        todayPlan.selected[sec.key].push(newId);
+        LS.set('hz_plan', todayPlan);
+      }
+      fbWriteSections();
+      addToNotion(txt, sec.name, newId);
       items.appendChild(buildMItem(sec,{id:newId,text:txt}));
       inp.value='';inp.focus();updateStat(sec.key);updateHeader();updateMatrixGauges(sec.key);
     };
@@ -1356,8 +1362,14 @@ function doAdd(secKey){
   const text=inp?.value.trim();if(!text){inp?.focus();return;}
   const sec=sections.find(s=>s.key===secKey);
   const newId=uid(secKey);sec.items.push({id:newId,text});LS.set('hz_sections',sections);
-  fbWriteSections(); // ← sections 경로만
-  addToNotion(text, sec.name, newId); // ← Notion 동기화
+  // 오늘 플래닝 활성화 중이면 새 항목도 선택에 추가 (비활성화 방지)
+  if (todayPlan && todayPlan.selected) {
+    if (!todayPlan.selected[secKey]) todayPlan.selected[secKey] = [];
+    todayPlan.selected[secKey].push(newId);
+    LS.set('hz_plan', todayPlan);
+  }
+  fbWriteSections();
+  addToNotion(text, sec.name, newId);
   const ul=document.getElementById(`list_${secKey}`);
   if(ul){
     const li=buildItem(sec,{id:newId,text},true);ul.appendChild(li);
