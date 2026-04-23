@@ -9,299 +9,142 @@
   <title>Hazel Check</title>
   <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css');
-:root {
-  --bg:#12100B; --surface:#1B1813; --surf2:#232018; --surf3:#2A2620;
-  --text:#EEE8DC; --dim:#9A8E7E; --faint:#5A5248; --border:#2B2720;
-  --gold:#D4A853;
-}
-[data-theme="cream"]{--bg:#FDFAF4;--surface:#FFFFFF;--surf2:#F0EDE6;--surf3:#E8E4DC;--text:#2C2420;--dim:#9A9690;--faint:#C0BCB6;--border:#E0DCD4;}
-[data-theme="gray"] {--bg:#F4F4F6;--surface:#FFFFFF;--surf2:#E8E8EE;--surf3:#DCDDE2;--text:#1A1A2E;--dim:#8888A0;--faint:#C0C0C8;--border:#DCDDE2;}
-[data-theme="mint"] {--bg:#F0F7F4;--surface:#FFFFFF;--surf2:#DEF0E8;--surf3:#D0E8E0;--text:#1A2E28;--dim:#6A9080;--faint:#A0C0B8;--border:#C8E0D4;}
-[data-theme="pink"] {--bg:#FDF4F4;--surface:#FFFFFF;--surf2:#F0DEDE;--surf3:#E8D0D0;--text:#2E1A1A;--dim:#907070;--faint:#C0A0A0;--border:#EAD4D4;}
-.prog-fill{background:linear-gradient(90deg,#D4A853,#C4898B) !important;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-body{background:var(--bg);color:var(--text);font-family:'Pretendard Variable','Pretendard',-apple-system,sans-serif;min-height:100svh;padding-bottom:calc(150px + env(safe-area-inset-bottom));overflow-x:hidden;}
-header{position:sticky;top:0;z-index:20;background:var(--bg);padding:calc(env(safe-area-inset-top) + 18px) 16px 12px;}
-.hdr-row1{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
-.app-name-wrap{display:flex;align-items:center;gap:5px;}
-.app-name{font-size:20px;font-weight:700;letter-spacing:-0.4px;color:var(--text);}
-.app-name em{color:var(--gold);font-style:normal;}
-.gear-btn{width:26px;height:26px;border-radius:50%;background:var(--surf2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;flex-shrink:0;}
-.hdr-right{margin-left:auto;display:flex;align-items:center;gap:7px;}
-.streak-pill{display:flex;align-items:center;gap:4px;background:rgba(212,168,83,0.12);border:1px solid rgba(212,168,83,0.25);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:600;color:var(--gold);}
-.view-toggle{display:flex;background:var(--surf2);border:1px solid var(--border);border-radius:9px;overflow:hidden;}
-.vtog{background:none;border:none;padding:5px 10px;font-size:12px;font-weight:500;color:var(--dim);cursor:pointer;}
-.vtog.active{background:var(--gold);color:#12100B;font-weight:700;}
-.date-lbl{font-size:11px;color:var(--dim);margin-bottom:10px;}
-.prog-track{height:2px;background:var(--border);border-radius:2px;overflow:hidden;}
-.prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),#C4898B);border-radius:2px;transition:width 0.5s cubic-bezier(0.4,0,0.2,1);}
-.prog-label{text-align:right;font-size:11px;color:var(--dim);margin-top:5px;}
-#listView{padding:10px 16px;display:flex;flex-direction:column;gap:10px;}
-#matrixView{display:none;padding:10px 14px;flex-direction:column;gap:10px;}
-#settingsView{display:none;padding:10px 16px;flex-direction:column;gap:12px;}
-.sec-card{background:var(--surface);border-radius:18px;overflow:hidden;}
-.sec-head{display:flex;align-items:center;gap:9px;padding:13px 12px 11px 16px;}
-.sec-pip{width:3px;height:16px;border-radius:2px;flex-shrink:0;}
-.sec-emoji{font-size:15px;cursor:pointer;}
-.sec-name{font-size:13px;font-weight:600;flex:1;}
-.sec-stat{font-size:11px;color:var(--dim);margin-right:5px;}
-.sec-edit-btn{background:var(--surf2);border:1px solid var(--border);border-radius:20px;font-family:inherit;font-size:14px;color:var(--dim);cursor:pointer;padding:4px 9px;line-height:1;}
-.sec-divider{height:1px;background:var(--border);margin:0 16px;}
-.item-list{list-style:none;}
-.item-li{display:flex;align-items:center;gap:10px;padding:11px 14px 11px 10px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
-.item-inner{display:flex;align-items:center;gap:10px;flex:1;min-width:0;transition:transform 0.2s ease;}
-.swipe-del-bg{position:absolute;right:0;top:0;bottom:0;width:80px;background:#B05858;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:600;opacity:0;}
-.item-li.swipe-reveal .swipe-del-bg{opacity:1;}
-.drag-handle{color:var(--border);font-size:15px;cursor:grab;touch-action:none;padding:4px;}
-.item-box{width:22px;height:22px;flex-shrink:0;border-radius:7px;border:1.5px solid var(--col);position:relative;cursor:pointer;}
-.item-li.done .item-box{background:var(--col);border-color:var(--col);}
-.item-label{flex:1;font-size:15px;font-weight:400;position:relative;line-height:1.4;}
-.item-li.done .item-label{color:var(--dim);}
-.item-li.skipped{opacity:0.28;pointer-events:none;}
-.item-del{display:none;background:rgba(176,112,112,0.15);border:none;border-radius:8px;color:#C47A7A;font-size:18px;font-weight:700;padding:4px 10px;cursor:pointer;}
-.sec-card.editing .item-del{display:flex;align-items:center;}
-.inline-input{flex:1;background:var(--surf2);border:1.5px solid var(--col);border-radius:8px;padding:5px 10px;color:var(--text);font-family:inherit;font-size:15px;outline:none;}
-.add-row{display:flex;align-items:center;gap:8px;padding:10px 14px 14px 16px;}
-.add-input{flex:1;background:var(--surf2);border:1px solid var(--border);border-radius:11px;padding:10px 13px;color:var(--text);font-family:inherit;font-size:14px;outline:none;}
-.add-btn{border:none;border-radius:11px;padding:10px 15px;background:var(--col);color:var(--bg);font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;}
-.quick-add{display:flex;align-items:center;gap:7px;padding:10px 12px 13px 16px;font-size:13px;color:var(--dim);cursor:pointer;}
-.sec-drag-handle{display:flex;align-items:center;padding:4px;color:var(--border);font-size:15px;cursor:grab;margin-left:auto;}
-.sec-toggle{width:22px;height:22px;display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:11px;cursor:pointer;}
-.sec-card.collapsed .sec-toggle{transform:rotate(-90deg);}
-.sec-body{overflow:hidden;transition:max-height 0.3s ease;}
-.sec-card.collapsed .sec-body{max-height:0;opacity:0;}
-.footer-bar{position:fixed;bottom:0;left:0;right:0;padding:12px 16px calc(env(safe-area-inset-bottom) + 10px);background:linear-gradient(to top,var(--bg) 60%,transparent);display:flex;gap:10px;z-index:100;}
-.footer-btn{flex:1;padding:14px 10px;border-radius:16px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:transform 0.1s;}
-.footer-btn:active{transform:scale(0.98);}
-.btn-cert{background:var(--surf3);border:1px solid var(--border);color:var(--text);}
-.btn-reset{background:var(--surface);border:1px solid var(--border);color:var(--dim);}
-.toast{position:fixed;bottom:calc(90px + env(safe-area-inset-bottom) + 14px);left:50%;transform:translateX(-50%) translateY(4px);background:#252018;border:1px solid #3A3328;border-radius:14px;padding:11px 18px;font-size:13px;font-weight:500;color:var(--text);z-index:200;opacity:0;transition:opacity 0.2s, transform 0.2s;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:150;display:flex;align-items:flex-end;padding:16px;padding-bottom:calc(env(safe-area-inset-bottom) + 16px);opacity:0;pointer-events:none;transition:opacity 0.22s;}
-.overlay.show{opacity:1;pointer-events:all;}
-.sheet{width:100%;background:#1E1C17;border-radius:24px;padding:22px 20px 20px;transform:translateY(32px);transition:transform 0.28s cubic-bezier(0.34,1.1,0.64,1);max-height:82svh;overflow-y:auto;}
-.overlay.show .sheet{transform:translateY(0);}
-.sheet-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.sheet-title{font-size:16px;font-weight:700;}
-.sheet-tag{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:600;background:rgba(212,168,83,0.18);color:var(--gold);}
-.sheet-preview{background:#2a2520;border-radius:14px;padding:14px 16px;font-size:13px;line-height:1.8;color:var(--text);white-space:pre-wrap;margin-bottom:16px;font-family:'SF Mono','Menlo',monospace;border:1px solid var(--border);}
-.sheet-actions{display:flex;gap:10px;}
-.sheet-cancel{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:13px;color:var(--dim);font-family:inherit;font-size:15px;padding:14px;cursor:pointer;}
-.sheet-ok{flex:2;background:var(--gold);color:#12100B;border:none;border-radius:13px;font-family:inherit;font-size:15px;font-weight:700;padding:14px;cursor:pointer;}
-@keyframes bop{0%{transform:scale(1)}40%{transform:scale(1.05)}100%{transform:scale(1)}}
-.bop{animation:bop 0.22s ease;}
-#confettiCanvas{position:fixed;inset:0;pointer-events:none;z-index:250;}
-.plan-section{margin-bottom:20px;}
-.plan-sec-title{font-size:12px;font-weight:700;color:var(--dim);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
-.plan-sec-pip{width:3px;height:12px;border-radius:2px;}
-.plan-items{display:flex;flex-direction:column;gap:6px;}
-.plan-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surf2);border-radius:12px;border:1.5px solid var(--border);cursor:pointer;}
-.plan-item.selected{border-color:var(--col);}
-.plan-check{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;}
-.plan-item.selected .plan-check{background:var(--col);border-color:var(--col);color:var(--bg);}
-.day-done-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.85);background:var(--surface);border:1px solid var(--gold);border-radius:24px;padding:28px 32px;text-align:center;z-index:300;opacity:0;pointer-events:none;transition:opacity 0.3s, transform 0.3s;}
-.day-done-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:all;}
-.day-done-btn{margin-top:18px;background:var(--gold);color:#12100B;border:none;border-radius:14px;padding:12px 28px;font-weight:700;cursor:pointer;}
-</style>
+    :root {
+      --bg:#12100B; --surface:#1B1813; --surf2:#232018; --surf3:#2A2620;
+      --text:#EEE8DC; --dim:#9A8E7E; --faint:#5A5248; --border:#2B2720;
+      --gold:#D4A853;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+    body{background:var(--bg);color:var(--text);font-family:'Pretendard Variable','Pretendard',sans-serif;min-height:100svh;padding-bottom:150px;overflow-x:hidden;}
+    header{position:sticky;top:0;z-index:20;background:var(--bg);padding:calc(env(safe-area-inset-top) + 18px) 16px 12px;}
+    .hdr-row1{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+    .app-name{font-size:20px;font-weight:700;color:var(--text);}
+    .app-name em{color:var(--gold);font-style:normal;}
+    .streak-pill{background:rgba(212,168,83,0.1);border:1px solid rgba(212,168,83,0.2);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--gold);font-weight:600;}
+    .prog-track{height:2px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:10px;}
+    .prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),#C4898B);transition:width 0.5s ease;}
+    #listView{padding:10px 16px;display:flex;flex-direction:column;gap:12px;}
+    .sec-card{background:var(--surface);border-radius:18px;padding:14px;border:1px solid var(--border);}
+    .sec-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+    .sec-name{font-size:14px;font-weight:700;flex:1;}
+    .item-list{list-style:none;display:flex;flex-direction:column;gap:8px;}
+    .item-li{display:flex;align-items:center;gap:10px;font-size:15px;}
+    .item-box{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--col);flex-shrink:0;cursor:pointer;}
+    .item-li.done .item-box{background:var(--col);}
+    .item-li.done .item-label{color:var(--dim);text-decoration:line-through;}
+    .footer-bar{position:fixed;bottom:0;left:0;right:0;padding:16px;padding-bottom:calc(env(safe-area-inset-bottom) + 16px);background:linear-gradient(to top,var(--bg) 80%,transparent);display:flex;gap:12px;z-index:100;}
+    .footer-btn{flex:1;padding:16px;border-radius:16px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:transform 0.1s;}
+    .btn-cert{background:var(--surf3);color:var(--text);border:1px solid var(--border);}
+    .btn-reset{background:var(--gold);color:#12100B;}
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;display:none;align-items:flex-end;padding:16px;}
+    .overlay.show{display:flex;}
+    .sheet{width:100%;background:#1E1C17;border-radius:24px;padding:24px;max-height:80svh;overflow-y:auto;}
+    .sheet-preview{background:#2a2520;border-radius:12px;padding:16px;font-size:13px;line-height:1.6;color:var(--text);white-space:pre-wrap;margin:16px 0;font-family:monospace;border:1px solid var(--border);}
+    .sheet-ok{width:100%;padding:16px;background:var(--gold);border:none;border-radius:12px;font-weight:700;cursor:pointer;}
+    .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--surf3);padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:300;}
+    .toast.show{opacity:1;}
+  </style>
 </head>
 <body>
-<canvas id="confettiCanvas"></canvas>
 <header>
   <div class="hdr-row1">
-    <div class="app-name-wrap">
-      <div class="app-name" id="appNameDisplay"></div>
-      <div class="gear-btn" id="gearBtn">⚙</div>
-    </div>
-    <div class="hdr-right">
-      <div class="streak-pill">🔥 <span id="streakNum">0</span>일째</div>
-      <div class="view-toggle">
-        <button class="vtog active" id="btnList">☰</button>
-        <button class="vtog" id="btnMatrix">⊞</button>
-      </div>
-      <button onclick="handleAuth()" id="authBtn" style="background:var(--surf2);border:1px solid var(--border);border-radius:20px;font-size:11px;color:var(--dim);padding:5px 11px;cursor:pointer;">🔑 로그인</button>
-    </div>
+    <div class="app-name">Hazel <em>Check</em></div>
+    <div class="streak-pill">🔥 <span id="streakNum">0</span>일째</div>
   </div>
-  <div class="date-lbl" id="dateLbl"></div>
+  <div id="dateLbl" style="font-size:11px;color:var(--dim);"></div>
   <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
-  <div class="prog-label" id="progLabel">…</div>
 </header>
+
 <div id="listView"></div>
-<div id="matrixView"></div>
-<div id="settingsView"></div>
-<div class="footer-bar" id="footerBar">
+
+<div class="footer-bar">
   <button class="footer-btn btn-cert" id="certBtn">📋 오늘의 인증</button>
   <button class="footer-btn btn-reset" id="resetBtn">🌅 하루 시작</button>
 </div>
-<div class="toast" id="toast"></div>
+
+<div class="toast" id="toast">복사 완료! 🎉</div>
 
 <div class="overlay" id="certOverlay">
   <div class="sheet">
-    <div class="sheet-header"><div class="sheet-title" id="certTitle"></div><div class="sheet-tag" id="certTag">#인증</div></div>
+    <div style="font-weight:700;font-size:18px;">인증 내용 미리보기</div>
     <div class="sheet-preview" id="certPreview"></div>
-    <div class="sheet-actions"><button class="sheet-cancel" id="certCancel">취소</button><button class="sheet-ok" id="certCopy">📋 복사하기</button></div>
+    <button class="sheet-ok" id="certCopy">📋 복사하기</button>
+    <div id="certCancel" style="text-align:center;margin-top:16px;color:var(--dim);font-size:14px;cursor:pointer;">취소</div>
   </div>
-</div>
-<div class="overlay" id="planOverlay">
-  <div class="sheet">
-    <div class="sheet-header"><div class="sheet-title">🌅 오늘 뭐 할지 골라봐</div><div class="sheet-tag" id="planDate"></div></div>
-    <div id="planSections"></div>
-    <div class="sheet-actions"><button class="sheet-cancel" id="planCancel">취소</button><button class="sheet-ok" id="planOk">✓ 오늘 시작!</button></div>
-  </div>
-</div>
-<div class="overlay" id="resetOverlay">
-  <div class="sheet">
-    <div class="sheet-title">오늘 하루 수고했어 🌙</div>
-    <div class="sheet-actions"><button class="sheet-cancel" id="resetCancel">취소</button><button class="sheet-ok" id="resetOk">리셋할게</button></div>
-  </div>
-</div>
-
-<div class="day-done-toast" id="dayDoneToast">
-  <div style="font-size:48px;margin-bottom:12px;">🎉</div>
-  <div style="font-size:18px;font-weight:700;">오늘 다 했어!</div>
-  <button class="day-done-btn" id="dayDoneClose">닫기</button>
 </div>
 
 <script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getDatabase, ref, set, get, remove, onValue } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+  let sections = JSON.parse(localStorage.getItem('hz_sections')) || [
+    {key:'work', name:'Work', emoji:'💼', col:'#D4A853', items:[{id:'1',text:'Vender checks'}]},
+    {key:'routine', name:'일상·루틴', emoji:'🦋', col:'#C4898B', items:[{id:'2',text:'물 3잔마시기'},{id:'3',text:'중량스트레칭'}]}
+  ];
+  let checked = JSON.parse(localStorage.getItem('hz_checked')) || {};
+  let todayPlan = JSON.parse(localStorage.getItem('hz_plan')) || null;
 
-const firebaseConfig = { apiKey: "AIzaSyAp9OwLP6uthZUyUmOMG648fvxRcs7MxmE", authDomain: "hyperdodo-hazel.firebaseapp.com", databaseURL: "https://hyperdodo-hazel-default-rtdb.firebaseio.com", projectId: "hyperdodo-hazel", storageBucket: "hyperdodo-hazel.firebasestorage.app", messagingSenderId: "691673973840", appId: "1:691673973840:web:6caaf412e505f580f3bd55" };
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const auth = getAuth(app);
-const WORKER_URL = 'https://hazel-notion-proxy.hazelee-2626.workers.dev';
+  const todayStr = () => {
+    const d = new Date();
+    return `${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+  };
 
-let currentUser = null;
-let sections = JSON.parse(localStorage.getItem('hz_sections')) || [{key:'work',name:'Work',emoji:'💼',col:'#D4A853',items:[]},{key:'routine',name:'일상·루틴',emoji:'🌿',col:'#C4898B',items:[]}];
-let checked = JSON.parse(localStorage.getItem('hz_checked')) || {};
-let streak = localStorage.getItem('hz_streak') || 0;
-let todayPlan = JSON.parse(localStorage.getItem('hz_plan')) || null;
-let curView = 'list';
-
-const todayStr = () => new Date().toISOString().split('T')[0];
-const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-const allItems = () => sections.flatMap(s => s.items);
-
-function render() {
-  const lv = document.getElementById('listView'); lv.innerHTML = '';
-  sections.forEach(sec => lv.appendChild(buildCard(sec)));
-  updateHeader();
-}
-
-function buildCard(sec) {
-  const card = document.createElement('div'); card.className = 'sec-card';
-  card.style.setProperty('--col', sec.col);
-  const doneCount = sec.items.filter(it => checked[it.id]).length;
-  card.innerHTML = `<div class="sec-head"><div class="sec-toggle">▾</div><div class="sec-pip" style="background:${sec.col}"></div><span class="sec-emoji">${sec.emoji}</span><span class="sec-name">${esc(sec.name)}</span><span class="sec-stat">${doneCount}/${sec.items.length}</span><button class="sec-edit-btn">✏️</button></div><div class="sec-body"><div class="sec-divider"></div><ul class="item-list"></ul><div class="quick-add">+ 항목 추가</div></div>`;
-  const list = card.querySelector('.item-list');
-  sec.items.forEach(item => {
-    const isSelected = !todayPlan || !todayPlan.selected || (todayPlan.selected[sec.key] || []).includes(item.id);
-    if (!isSelected) return;
-    const li = document.createElement('li'); li.className = 'item-li' + (checked[item.id] ? ' done' : '');
-    li.style.setProperty('--col', sec.col);
-    li.innerHTML = `<div class="item-inner"><div class="item-box"></div><span class="item-label">${esc(item.text)}</span></div>`;
-    li.querySelector('.item-box').onclick = () => toggleCheck(item.id, sec.key);
-    list.appendChild(li);
-  });
-  card.querySelector('.quick-add').onclick = () => { const t = prompt('새 항목'); if(t) { const id = 'it_'+Date.now(); sec.items.push({id, text:t}); save(); render(); } };
-  return card;
-}
-
-function toggleCheck(id, secKey) {
-  if (checked[id]) delete checked[id]; else checked[id] = true;
-  save(); render();
-}
-
-function save() {
-  localStorage.setItem('hz_sections', JSON.stringify(sections));
-  localStorage.setItem('hz_checked', JSON.stringify(checked));
-}
-
-function updateHeader() {
-  const total = todayPlan ? Object.values(todayPlan.selected || {}).flat().length : allItems().length;
-  const done = allItems().filter(it => checked[it.id]).length;
-  document.getElementById('progFill').style.width = total ? (done/total*100)+'%' : '0%';
-  document.getElementById('progLabel').textContent = `${done} / ${total} 완료`;
-  document.getElementById('dateLbl').textContent = todayStr();
-  document.getElementById('streakNum').textContent = streak;
-  document.getElementById('appNameDisplay').innerHTML = 'Hazel <em>Check</em>';
-}
-
-// ═══ 인증 로직 (하젤님 요청 핵심) ═══
-document.getElementById('certBtn').onclick = () => {
-  const totalDone = allItems().filter(it => checked[it.id]).length;
-  const isClosing = totalDone > 0;
-  const tag = isClosing ? "#완료한일" : "#해야할일";
-  const title = isClosing ? "🌙 오늘의 마무리" : "🌅 오늘의 계획";
-  
-  let msg = `📅 ${todayStr()} ${title}\n${tag}\n\n`;
-  
-  sections.forEach(sec => {
-    const activeItems = sec.items.filter(it => !todayPlan || !todayPlan.selected || (todayPlan.selected[sec.key] || []).includes(it.id));
-    // 마무리 모드면 완료된 것만, 계획 모드면 선택된 전부
-    const showItems = isClosing ? activeItems.filter(it => checked[it.id]) : activeItems;
-    
-    if (showItems.length > 0) {
-      msg += `${sec.emoji} ${sec.name}\n`;
-      showItems.forEach(it => {
-        const box = checked[it.id] ? '[V]' : '[ ]'; // • 대신 [] 이 모양으로!
-        msg += `${box} ${it.text}\n`;
+  function render() {
+    const lv = document.getElementById('listView'); lv.innerHTML = '';
+    sections.forEach(sec => {
+      const card = document.createElement('div'); card.className = 'sec-card'; card.style.setProperty('--col', sec.col);
+      let itemsHtml = '';
+      sec.items.forEach(it => {
+        const isDone = checked[it.id];
+        itemsHtml += `<li class="item-li ${isDone?'done':''}"><div class="item-box" onclick="toggleCheck('${it.id}')"></div><span class="item-label">${it.text}</span></li>`;
       });
-      msg += `\n`;
-    }
-  });
-
-  document.getElementById('certPreview').textContent = msg.trim();
-  document.getElementById('certTag').textContent = tag;
-  document.getElementById('certTitle').textContent = title;
-  document.getElementById('certOverlay').classList.add('show');
-};
-
-document.getElementById('certCopy').onclick = () => {
-  navigator.clipboard.writeText(document.getElementById('certPreview').textContent);
-  document.getElementById('certOverlay').classList.remove('show');
-  const t = document.getElementById('toast'); t.textContent = "복사 완료! 🎉"; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
-};
-
-document.getElementById('certCancel').onclick = () => document.getElementById('certOverlay').classList.remove('show');
-
-// 하루 시작 플래닝
-document.getElementById('resetBtn').onclick = () => {
-  const cont = document.getElementById('planSections'); cont.innerHTML = '';
-  sections.forEach(sec => {
-    const div = document.createElement('div'); div.className = 'plan-section';
-    div.innerHTML = `<div class="plan-sec-title">${sec.emoji} ${sec.name}</div><div class="plan-items"></div>`;
-    const itemCont = div.querySelector('.plan-items');
-    sec.items.forEach(it => {
-      const itemDiv = document.createElement('div'); itemDiv.className = 'plan-item selected';
-      itemDiv.style.setProperty('--col', sec.col);
-      itemDiv.innerHTML = `<div class="plan-check">✓</div><span>${it.text}</span>`;
-      itemDiv.dataset.id = it.id; itemDiv.dataset.sec = sec.key;
-      itemDiv.onclick = () => { itemDiv.classList.toggle('selected'); itemDiv.querySelector('.plan-check').textContent = itemDiv.classList.contains('selected') ? '✓' : ''; };
-      itemCont.appendChild(itemDiv);
+      card.innerHTML = `<div class="sec-head"><span class="sec-name">${sec.emoji} ${sec.name}</span></div><ul class="item-list">${itemsHtml}</ul>`;
+      lv.appendChild(card);
     });
-    cont.appendChild(div);
-  });
-  document.getElementById('planOverlay').classList.add('show');
-};
+    const total = Object.values(checked).filter(Boolean).length;
+    document.getElementById('progFill').style.width = (total/3*100) + '%';
+    document.getElementById('dateLbl').textContent = new Date().toLocaleDateString();
+  }
 
-document.getElementById('planOk').onclick = () => {
-  const sel = {};
-  document.querySelectorAll('.plan-item.selected').forEach(el => {
-    if(!sel[el.dataset.sec]) sel[el.dataset.sec] = [];
-    sel[el.dataset.sec].push(el.dataset.id);
-  });
-  todayPlan = { date: todayStr(), selected: sel };
-  checked = {}; localStorage.setItem('hz_plan', JSON.stringify(todayPlan));
-  save(); document.getElementById('planOverlay').classList.remove('show'); render();
-};
+  window.toggleCheck = (id) => {
+    if(checked[id]) delete checked[id]; else checked[id] = true;
+    localStorage.setItem('hz_checked', JSON.stringify(checked));
+    render();
+  };
 
-document.getElementById('planCancel').onclick = () => document.getElementById('planOverlay').classList.remove('show');
-document.getElementById('dayDoneClose').onclick = () => document.getElementById('dayDoneToast').classList.remove('show');
+  // ═══ 하젤님 요청: 간결한 복사 기능 ═══
+  document.getElementById('certBtn').onclick = () => {
+    const doneCount = Object.keys(checked).length;
+    const isClosing = doneCount > 0;
+    const tag = isClosing ? "#완료한일" : "#해야할일";
+    
+    let msg = `#${todayStr()} ${tag}\n\n`;
+    
+    sections.forEach(sec => {
+      // 마무리 모드면 완료된 것만, 시작 모드면 전부
+      const showItems = isClosing ? sec.items.filter(it => checked[it.id]) : sec.items;
+      
+      if (showItems.length > 0) {
+        msg += `${sec.emoji} ${sec.name}\n`;
+        showItems.forEach(it => {
+          const box = checked[it.id] ? '[V]' : '[ ]';
+          msg += `${box} ${it.text}\n`;
+        });
+        msg += `\n`;
+      }
+    });
 
-render();
+    document.getElementById('certPreview').textContent = msg.trim();
+    document.getElementById('certOverlay').classList.add('show');
+  };
+
+  document.getElementById('certCopy').onclick = () => {
+    navigator.clipboard.writeText(document.getElementById('certPreview').textContent);
+    document.getElementById('certOverlay').classList.remove('show');
+    const t = document.getElementById('toast'); t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  };
+
+  document.getElementById('certCancel').onclick = () => document.getElementById('certOverlay').classList.remove('show');
+
+  render();
 </script>
 </body>
 </html>
