@@ -198,6 +198,23 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);padding:calc(env(sa
 .sheet-ok{flex:2;border:none;border-radius:13px;color:#fff;font-family:inherit;font-size:15px;font-weight:700;padding:14px;cursor:pointer;}
 @keyframes bop{0%{transform:scale(1)}40%{transform:scale(1.05)}100%{transform:scale(1)}}
 .bop{animation:bop .22s ease;}
+/* ═══ 아카이브 섹션 ════════════════════════════════════ */
+.archive-card{background:var(--surface);border-radius:18px;overflow:hidden;opacity:.85;}
+.archive-toggle-row{display:flex;align-items:center;gap:8px;padding:13px 14px 13px 16px;cursor:pointer;touch-action:manipulation;}
+.archive-toggle-row:active{background:var(--surf2);}
+.archive-chevron{font-size:11px;color:var(--faint);transition:transform .22s ease;flex-shrink:0;}
+.archive-card.open .archive-chevron{transform:rotate(90deg);}
+.archive-label{font-size:12px;font-weight:600;color:var(--faint);flex:1;letter-spacing:.3px;}
+.archive-count{font-size:11px;color:var(--faint);background:var(--surf2);border-radius:10px;padding:2px 8px;}
+.archive-body{overflow:hidden;max-height:0;transition:max-height .3s cubic-bezier(.4,0,.2,1);}
+.archive-card.open .archive-body{max-height:4000px;}
+.archive-sec-label{font-size:11px;font-weight:600;color:var(--dim);padding:10px 16px 4px;display:flex;align-items:center;gap:5px;}
+.archive-sec-pip{width:2px;height:10px;border-radius:2px;display:inline-block;}
+.archive-item{display:flex;align-items:center;gap:10px;padding:9px 14px 9px 16px;border-bottom:1px solid var(--border);}
+.archive-item:last-child{border-bottom:none;}
+.archive-item-text{flex:1;font-size:14px;color:var(--faint);word-break:keep-all;line-height:1.4;}
+.archive-restore-btn{width:26px;height:26px;border-radius:50%;background:var(--surf2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--gold);cursor:pointer;touch-action:manipulation;flex-shrink:0;transition:background .15s;}
+.archive-restore-btn:active{background:var(--surf3);}
 /* ═══ 하루 시작 플래닝 ════════════════════════════════ */
 .plan-section{margin-bottom:20px;}
 .plan-sec-title{font-size:12px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
@@ -248,7 +265,7 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);padding:calc(env(sa
 <div id="matrixView"></div>
 <div id="settingsView"></div>
 <div class="footer-bar" id="footerBar">
-  <button class="footer-btn btn-discord" id="discordBtn">📋 Discord 인증</button>
+  <button class="footer-btn btn-discord" id="discordBtn">✨ 오늘의 인증</button>
   <button class="footer-btn btn-reset" id="resetBtn">🌅 하루 시작</button>
 </div>
 <div class="toast" id="toast"></div>
@@ -639,9 +656,9 @@ const uid=p=>`${p}_${Date.now()}_${Math.random().toString(36).slice(2,5)}`;
 //  Translations
 // ══════════════════════════════════════════════════════
 const LANG={
-  ko:{editBtn:'✏️',doneBtn:'✓',quickAdd:'항목 추가 / 편집',addPlaceholder:'새 항목 입력…',addBtn:'추가',mAddTrig:'+ 항목 추가',mAddPlaceholder:'새 항목…',discordBtn:'📋 Discord 인증',resetBtn:'🌙 마무리',complete:(d,t)=>`${d} / ${t} 완료`,streakUnit:'일째',discordTodoHash:'#해야할일',discordDoneHash:'#완료한일',tagTodo:'#해야할일',tagDone:'#완료한일',copyBtn:'📋 복사하기',cancelBtn:'취소',resetTitle:'오늘 하루 수고했어 🌙',resetDesc:'체크 내역만 초기화할게.\n항목 목록은 그대로 남아있어.',resetOk:'리셋할게',toastCopied:'복사 완료! Discord에 붙여넣기 해줘 🎉',toastReset:(n)=>`🔥 ${n}일째 달성! 오늘도 수고했어`,toastAllDone:'🎉 전부 완료! 오늘 진짜 잘했어!',toastColorChanged:'색상 변경됐어!',toastEmojiChanged:'이모지 변경됐어!',toastSecAdded:(n)=>`섹션 "${n}" 추가됐어!`,toastSecDeleted:'섹션 삭제됐어.',toastMinSec:'섹션이 하나 이상 있어야 해!',toastColorErr:'올바른 색상 코드를 입력해줘 (예: #D4A853)',toastReset2:'전체 초기화 완료!',settingAppName:'앱 이름',settingTheme:'테마',settingViz:'🎨 시각화',settingSection:'섹션 관리',settingData:'데이터',settingLang:'언어',arcLabel:'원형 게이지',arcSub:'매트릭스 뷰 상단 섹션별 원형 진행률',barLabel:'카드 미니 진행 바',barSub:'각 사분면 헤더 아래 얇은 색상 바',gaugeLabelLabel:'게이지 이름 표시',gaugeLabelSub:'원형 게이지 아래 섹션 이름',addSecPlaceholder:'새 섹션 이름…',addSecBtn:'+ 추가',dangerBtn:'⚠️ 전체 초기화',dangerOk:'전부 초기화',colorTitle:'섹션 색상 변경',colorDirectLabel:'직접 입력',colorOk:'적용',emojiTitle:'이모지 변경',appNamePlaceholder:'앱 이름 입력…',days:['일','월','화','수','목','금','토'],dateFormat:(m,d,day)=>`${m}월 ${d}일 ${day}요일`,ampm:(h)=>h>=12?'오후':'오전',themes:{dark:'🌙 다크',cream:'☀️ 크림 화이트',gray:'🩶 쿨 그레이',mint:'🌿 민트 그린',pink:'🌸 블러쉬 핑크'},themeSubs:{dark:'지금 기본',cream:'따뜻하고 클래식',gray:'모던하고 깔끔',mint:'자연스럽고 상쾌',pink:'부드럽고 감성적'},langs:{ko:'🇰🇷 한국어',en:'🇺🇸 English',es:'🇪🇸 Español'}},
-  en:{editBtn:'✏️',doneBtn:'✓',quickAdd:'Add / Edit items',addPlaceholder:'New item…',addBtn:'Add',mAddTrig:'+ Add item',mAddPlaceholder:'New item…',discordBtn:'📋 Discord Post',resetBtn:'🌙 End Day',complete:(d,t)=>`${d} / ${t} done`,streakUnit:' day streak',discordTodoHash:'#todo',discordDoneHash:'#done',tagTodo:'#todo',tagDone:'#done',copyBtn:'📋 Copy',cancelBtn:'Cancel',resetTitle:'Great work today 🌙',resetDesc:"This will clear today's checks.\nYour items will stay.",resetOk:'Reset',toastCopied:'Copied! Paste into Discord 🎉',toastReset:(n)=>`🔥 ${n}-day streak! Keep it up!`,toastAllDone:'🎉 All done! Amazing work today!',toastColorChanged:'Color updated!',toastEmojiChanged:'Emoji updated!',toastSecAdded:(n)=>`Section "${n}" added!`,toastSecDeleted:'Section deleted.',toastMinSec:'You need at least one section!',toastColorErr:'Enter a valid hex code (e.g. #D4A853)',toastReset2:'All data cleared!',settingAppName:'App Name',settingTheme:'Theme',settingViz:'🎨 Display',settingSection:'Sections',settingData:'Data',settingLang:'Language',arcLabel:'Arc Gauges',arcSub:'Section progress rings in matrix view',barLabel:'Mini Progress Bar',barSub:'Thin bar below each quadrant header',gaugeLabelLabel:'Show gauge labels',gaugeLabelSub:'Section names under arc gauges',addSecPlaceholder:'New section name…',addSecBtn:'+ Add',dangerBtn:'⚠️ Reset All Data',dangerOk:'Reset Everything',colorTitle:'Change Section Color',colorDirectLabel:'Custom hex',colorOk:'Apply',emojiTitle:'Change Emoji',appNamePlaceholder:'Enter app name…',days:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],dateFormat:(m,d,day)=>`${day}, ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1]} ${d}`,ampm:(h)=>h>=12?'PM':'AM',themes:{dark:'🌙 Dark',cream:'☀️ Cream White',gray:'🩶 Cool Gray',mint:'🌿 Mint Green',pink:'🌸 Blush Pink'},themeSubs:{dark:'Default',cream:'Warm & classic',gray:'Modern & clean',mint:'Fresh & natural',pink:'Soft & cozy'},langs:{ko:'🇰🇷 한국어',en:'🇺🇸 English',es:'🇪🇸 Español'}},
-  es:{editBtn:'✏️',doneBtn:'✓',quickAdd:'Agregar / Editar',addPlaceholder:'Nuevo elemento…',addBtn:'Agregar',mAddTrig:'+ Agregar',mAddPlaceholder:'Nuevo elemento…',discordBtn:'📋 Publicar Discord',resetBtn:'🌙 Terminar día',complete:(d,t)=>`${d} / ${t} completado`,streakUnit:' días seguidos',discordTodoHash:'#porhacer',discordDoneHash:'#completado',tagTodo:'#porhacer',tagDone:'#completado',copyBtn:'📋 Copiar',cancelBtn:'Cancelar',resetTitle:'¡Buen trabajo hoy! 🌙',resetDesc:'Se borrarán los checks de hoy.\nLos elementos quedan guardados.',resetOk:'Reiniciar',toastCopied:'¡Copiado! Pégalo en Discord 🎉',toastReset:(n)=>`🔥 ¡${n} días seguidos!`,toastAllDone:'🎉 ¡Todo completado!',toastColorChanged:'¡Color actualizado!',toastEmojiChanged:'¡Emoji actualizado!',toastSecAdded:(n)=>`¡Sección "${n}" agregada!`,toastSecDeleted:'Sección eliminada.',toastMinSec:'¡Necesitas al menos una sección!',toastColorErr:'Ingresa un código hex válido',toastReset2:'¡Todos los datos eliminados!',settingAppName:'Nombre de la app',settingTheme:'Tema',settingViz:'🎨 Pantalla',settingSection:'Secciones',settingData:'Datos',settingLang:'Idioma',arcLabel:'Indicadores circulares',arcSub:'Anillos de progreso en vista de matriz',barLabel:'Barra mini de progreso',barSub:'Barra delgada bajo el encabezado',gaugeLabelLabel:'Mostrar etiquetas',gaugeLabelSub:'Nombres de sección bajo los indicadores',addSecPlaceholder:'Nombre de sección…',addSecBtn:'+ Agregar',dangerBtn:'⚠️ Borrar todo',dangerOk:'Borrar todo',colorTitle:'Cambiar color',colorDirectLabel:'Código hex',colorOk:'Aplicar',emojiTitle:'Cambiar emoji',appNamePlaceholder:'Nombre de la app…',days:['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'],dateFormat:(m,d,day)=>`${day} ${d} de ${['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][m-1]}`,ampm:(h)=>h>=12?'PM':'AM',themes:{dark:'🌙 Oscuro',cream:'☀️ Crema',gray:'🩶 Gris frío',mint:'🌿 Verde menta',pink:'🌸 Rosa suave'},themeSubs:{dark:'Por defecto',cream:'Cálido y clásico',gray:'Moderno y limpio',mint:'Fresco y natural',pink:'Suave y acogedor'},langs:{ko:'🇰🇷 한국어',en:'🇺🇸 English',es:'🇪🇸 Español'}},
+  ko:{editBtn:'✏️',doneBtn:'✓',quickAdd:'항목 추가 / 편집',addPlaceholder:'새 항목 입력…',addBtn:'추가',mAddTrig:'+ 항목 추가',mAddPlaceholder:'새 항목…',discordBtn:'✨ 오늘의 인증',resetBtn:'🌙 마무리',complete:(d,t)=>`${d} / ${t} 완료`,streakUnit:'일째',discordTodoHash:'#해야할일',discordDoneHash:'#완료한일',tagTodo:'#해야할일',tagDone:'#완료한일',copyBtn:'📋 복사하기',cancelBtn:'취소',resetTitle:'오늘 하루 수고했어 🌙',resetDesc:'체크 내역만 초기화할게.\n항목 목록은 그대로 남아있어.',resetOk:'리셋할게',toastCopied:'복사 완료! Discord에 붙여넣기 해줘 🎉',toastReset:(n)=>`🔥 ${n}일째 달성! 오늘도 수고했어`,toastAllDone:'🎉 전부 완료! 오늘 진짜 잘했어!',toastColorChanged:'색상 변경됐어!',toastEmojiChanged:'이모지 변경됐어!',toastSecAdded:(n)=>`섹션 "${n}" 추가됐어!`,toastSecDeleted:'섹션 삭제됐어.',toastMinSec:'섹션이 하나 이상 있어야 해!',toastColorErr:'올바른 색상 코드를 입력해줘 (예: #D4A853)',toastReset2:'전체 초기화 완료!',settingAppName:'앱 이름',settingTheme:'테마',settingViz:'🎨 시각화',settingSection:'섹션 관리',settingData:'데이터',settingLang:'언어',arcLabel:'원형 게이지',arcSub:'매트릭스 뷰 상단 섹션별 원형 진행률',barLabel:'카드 미니 진행 바',barSub:'각 사분면 헤더 아래 얇은 색상 바',gaugeLabelLabel:'게이지 이름 표시',gaugeLabelSub:'원형 게이지 아래 섹션 이름',addSecPlaceholder:'새 섹션 이름…',addSecBtn:'+ 추가',dangerBtn:'⚠️ 전체 초기화',dangerOk:'전부 초기화',colorTitle:'섹션 색상 변경',colorDirectLabel:'직접 입력',colorOk:'적용',emojiTitle:'이모지 변경',appNamePlaceholder:'앱 이름 입력…',days:['일','월','화','수','목','금','토'],dateFormat:(m,d,day)=>`${m}월 ${d}일 ${day}요일`,ampm:(h)=>h>=12?'오후':'오전',themes:{dark:'🌙 다크',cream:'☀️ 크림 화이트',gray:'🩶 쿨 그레이',mint:'🌿 민트 그린',pink:'🌸 블러쉬 핑크'},themeSubs:{dark:'지금 기본',cream:'따뜻하고 클래식',gray:'모던하고 깔끔',mint:'자연스럽고 상쾌',pink:'부드럽고 감성적'},langs:{ko:'🇰🇷 한국어',en:'🇺🇸 English',es:'🇪🇸 Español'}},
+  en:{editBtn:'✏️',doneBtn:'✓',quickAdd:'Add / Edit items',addPlaceholder:'New item…',addBtn:'Add',mAddTrig:'+ Add item',mAddPlaceholder:'New item…',discordBtn:'✨ Today\'s Log',resetBtn:'🌙 End Day',complete:(d,t)=>`${d} / ${t} done`,streakUnit:' day streak',discordTodoHash:'#todo',discordDoneHash:'#done',tagTodo:'#todo',tagDone:'#done',copyBtn:'📋 Copy',cancelBtn:'Cancel',resetTitle:'Great work today 🌙',resetDesc:"This will clear today's checks.\nYour items will stay.",resetOk:'Reset',toastCopied:'Copied! Paste into Discord 🎉',toastReset:(n)=>`🔥 ${n}-day streak! Keep it up!`,toastAllDone:'🎉 All done! Amazing work today!',toastColorChanged:'Color updated!',toastEmojiChanged:'Emoji updated!',toastSecAdded:(n)=>`Section "${n}" added!`,toastSecDeleted:'Section deleted.',toastMinSec:'You need at least one section!',toastColorErr:'Enter a valid hex code (e.g. #D4A853)',toastReset2:'All data cleared!',settingAppName:'App Name',settingTheme:'Theme',settingViz:'🎨 Display',settingSection:'Sections',settingData:'Data',settingLang:'Language',arcLabel:'Arc Gauges',arcSub:'Section progress rings in matrix view',barLabel:'Mini Progress Bar',barSub:'Thin bar below each quadrant header',gaugeLabelLabel:'Show gauge labels',gaugeLabelSub:'Section names under arc gauges',addSecPlaceholder:'New section name…',addSecBtn:'+ Add',dangerBtn:'⚠️ Reset All Data',dangerOk:'Reset Everything',colorTitle:'Change Section Color',colorDirectLabel:'Custom hex',colorOk:'Apply',emojiTitle:'Change Emoji',appNamePlaceholder:'Enter app name…',days:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],dateFormat:(m,d,day)=>`${day}, ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1]} ${d}`,ampm:(h)=>h>=12?'PM':'AM',themes:{dark:'🌙 Dark',cream:'☀️ Cream White',gray:'🩶 Cool Gray',mint:'🌿 Mint Green',pink:'🌸 Blush Pink'},themeSubs:{dark:'Default',cream:'Warm & classic',gray:'Modern & clean',mint:'Fresh & natural',pink:'Soft & cozy'},langs:{ko:'🇰🇷 한국어',en:'🇺🇸 English',es:'🇪🇸 Español'}},
+  es:{editBtn:'✏️',doneBtn:'✓',quickAdd:'Agregar / Editar',addPlaceholder:'Nuevo elemento…',addBtn:'Agregar',mAddTrig:'+ Agregar',mAddPlaceholder:'Nuevo elemento…',discordBtn:'✨ Registro de hoy',resetBtn:'🌙 Terminar día',complete:(d,t)=>`${d} / ${t} completado`,streakUnit:' días seguidos',discordTodoHash:'#porhacer',discordDoneHash:'#completado',tagTodo:'#porhacer',tagDone:'#completado',copyBtn:'📋 Copiar',cancelBtn:'Cancelar',resetTitle:'¡Buen trabajo hoy! 🌙',resetDesc:'Se borrarán los checks de hoy.\nLos elementos quedan guardados.',resetOk:'Reiniciar',toastCopied:'¡Copiado! Pégalo en Discord 🎉',toastReset:(n)=>`🔥 ¡${n} días seguidos!`,toastAllDone:'🎉 ¡Todo completado!',toastColorChanged:'¡Color actualizado!',toastEmojiChanged:'¡Emoji actualizado!',toastSecAdded:(n)=>`¡Sección "${n}" agregada!`,toastSecDeleted:'Sección eliminada.',toastMinSec:'¡Necesitas al menos una sección!',toastColorErr:'Ingresa un código hex válido',toastReset2:'¡Todos los datos eliminados!',settingAppName:'Nombre de la app',settingTheme:'Tema',settingViz:'🎨 Pantalla',settingSection:'Secciones',settingData:'Datos',settingLang:'Idioma',arcLabel:'Indicadores circulares',arcSub:'Anillos de progreso en vista de matriz',barLabel:'Barra mini de progreso',barSub:'Barra delgada bajo el encabezado',gaugeLabelLabel:'Mostrar etiquetas',gaugeLabelSub:'Nombres de sección bajo los indicadores',addSecPlaceholder:'Nombre de sección…',addSecBtn:'+ Agregar',dangerBtn:'⚠️ Borrar todo',dangerOk:'Borrar todo',colorTitle:'Cambiar color',colorDirectLabel:'Código hex',colorOk:'Aplicar',emojiTitle:'Cambiar emoji',appNamePlaceholder:'Nombre de la app…',days:['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'],dateFormat:(m,d,day)=>`${day} ${d} de ${['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][m-1]}`,ampm:(h)=>h>=12?'PM':'AM',themes:{dark:'🌙 Oscuro',cream:'☀️ Crema',gray:'🩶 Gris frío',mint:'🌿 Verde menta',pink:'🌸 Rosa suave'},themeSubs:{dark:'Por defecto',cream:'Cálido y clásico',gray:'Moderno y limpio',mint:'Fresco y natural',pink:'Suave y acogedor'},langs:{ko:'🇰🇷 한국어',en:'🇺🇸 English',es:'🇪🇸 Español'}},
 };
 const L=()=>LANG[curLang]||LANG.ko;
 const fmtTime=ts=>{const d=new Date(ts),h=d.getHours(),m=String(d.getMinutes()).padStart(2,'0');return `${L().ampm(h)} ${h%12||12}:${m}`;};
@@ -786,6 +803,11 @@ function render(){
   const lv=document.getElementById('listView');
   lv.innerHTML='';
   sections.forEach(sec=>lv.appendChild(buildCard(sec)));
+  // 하루 시작 모드 && 미선택 항목이 있으면 아카이브 카드 렌더
+  if (todayPlan && todayPlan.selected) {
+    const archiveCard = buildArchiveCard();
+    if (archiveCard) lv.appendChild(archiveCard);
+  }
   updateHeader();
   initSecDrag(lv);
 }
@@ -1439,23 +1461,35 @@ function updateStat(secKey){
 // ══════════════════════════════════════════════════════
 let discordMsg='';
 document.getElementById('discordBtn').onclick=()=>{
-  const now=new Date();
-  const tag=`#${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
-  const totalDone=allItems().filter(it=>checked[it.id]).length;
-  const isTodo=totalDone===0;
-  const lines=[];
-  if(isTodo){
-    lines.push(`${tag} ${L().discordTodoHash}\n`);
-    sections.forEach(sec=>{if(!sec.items.length)return;lines.push(`${sec.emoji} ${sec.name}`);sec.items.forEach(it=>lines.push(`• ${it.text}`));lines.push('');});
-  } else {
-    lines.push(`${tag} ${L().discordDoneHash}\n`);
-    sections.forEach(sec=>{const done=sec.items.filter(it=>checked[it.id]);if(!done.length)return;lines.push(`${sec.emoji} ${sec.name}`);done.forEach(it=>lines.push(`[V] ${it.text}`));lines.push('');});
-  }
-  discordMsg=lines.join('\n').trim();
-  document.getElementById('sheetPreview').textContent=discordMsg;
-  document.getElementById('sheetTag').textContent=isTodo?L().tagTodo:L().tagDone;
-  document.getElementById('sheetTag').className='sheet-tag '+(isTodo?'tag-todo':'tag-done');
-  document.getElementById('sheetTitle').textContent=isTodo?'오늘 할 일 🌅':'오늘 하루 인증 🌙';
+  // 날짜: 하루 시작한 날짜 기준 (12시 넘겨도 유지)
+  const planDate = todayPlan ? todayPlan.date : todayStr();
+  const parts = planDate.split('-');
+  const tag = '#' + parts[1] + parts[2]; // #0423
+
+  // 하루 시작 선택된 항목만 필터
+  const getActiveItems = (sec) => {
+    if (!todayPlan || !todayPlan.selected) return sec.items;
+    const sel = todayPlan.selected[sec.key] || [];
+    return sec.items.filter(it => sel.includes(it.id));
+  };
+
+  const anyDone = sections.some(sec => getActiveItems(sec).some(it => checked[it.id]));
+  const tag2 = anyDone ? '#완료한일' : '#해야할일';
+
+  const lines = [];
+  lines.push(`${tag} ${tag2}`);
+  sections.forEach(sec => {
+    const items = getActiveItems(sec);
+    if (!items.length) return;
+    lines.push(`${sec.emoji} ${sec.name}`);
+    items.forEach(it => lines.push((checked[it.id] ? '[V] ' : '[ ] ') + it.text));
+  });
+
+  discordMsg = lines.join('\n').trim();
+  document.getElementById('sheetPreview').textContent = discordMsg;
+  document.getElementById('sheetTag').textContent = tag2;
+  document.getElementById('sheetTag').className = 'sheet-tag ' + (anyDone ? 'tag-done' : 'tag-todo');
+  document.getElementById('sheetTitle').textContent = anyDone ? '오늘 하루 인증 🌙' : '오늘 할 일 🌅';
   document.getElementById('discordOverlay').classList.add('show');
 };
 document.getElementById('discordCancel').onclick=()=>document.getElementById('discordOverlay').classList.remove('show');
@@ -1669,6 +1703,86 @@ async function saveDayHistory() {
 document.getElementById('dayDoneClose').onclick = () => {
   document.getElementById('dayDoneToast').classList.remove('show');
 };
+
+
+// ══════════════════════════════════════════════════════
+//  아카이브 카드 — 하루 시작에서 미선택된 항목들
+// ══════════════════════════════════════════════════════
+let archiveOpen = LS.get('hz_archive_open', false);
+
+function buildArchiveCard() {
+  if (!todayPlan || !todayPlan.selected) return null;
+
+  // 미선택 항목 수집 (섹션별)
+  const archivedBySec = [];
+  sections.forEach(sec => {
+    const sel = todayPlan.selected[sec.key] || [];
+    const skipped = sec.items.filter(it => !sel.includes(it.id));
+    if (skipped.length) archivedBySec.push({ sec, items: skipped });
+  });
+  if (!archivedBySec.length) return null;
+
+  const totalCount = archivedBySec.reduce((a, b) => a + b.items.length, 0);
+
+  const card = document.createElement('div');
+  card.className = 'archive-card' + (archiveOpen ? ' open' : '');
+
+  // 토글 헤더
+  const toggleRow = document.createElement('div');
+  toggleRow.className = 'archive-toggle-row';
+  toggleRow.innerHTML = `
+    <span class="archive-chevron">▸</span>
+    <span class="archive-label">📦 아카이브</span>
+    <span class="archive-count">${totalCount}개</span>`;
+  const doArchiveToggle = e => {
+    e.stopPropagation();
+    archiveOpen = !archiveOpen;
+    LS.set('hz_archive_open', archiveOpen);
+    card.classList.toggle('open', archiveOpen);
+  };
+  toggleRow.addEventListener('click', doArchiveToggle);
+  toggleRow.addEventListener('touchend', e => { e.preventDefault(); doArchiveToggle(e); }, {passive:false});
+  card.appendChild(toggleRow);
+
+  // 바디
+  const body = document.createElement('div');
+  body.className = 'archive-body';
+
+  archivedBySec.forEach(({ sec, items }) => {
+    // 섹션 레이블
+    const secLabel = document.createElement('div');
+    secLabel.className = 'archive-sec-label';
+    secLabel.innerHTML = `<span class="archive-sec-pip" style="background:${sec.col}"></span>${sec.emoji} ${esc(sec.name)}`;
+    body.appendChild(secLabel);
+
+    items.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'archive-item';
+      row.innerHTML = `<span class="archive-item-text">${esc(item.text)}</span>
+        <button class="archive-restore-btn" title="오늘 리스트에 추가">＋</button>`;
+
+      // 복원 버튼 — 아카이브에서 꺼내 오늘 선택 목록에 추가
+      const restoreBtn = row.querySelector('.archive-restore-btn');
+      const doRestore = e => {
+        e.stopPropagation();
+        if (!todayPlan.selected[sec.key]) todayPlan.selected[sec.key] = [];
+        if (!todayPlan.selected[sec.key].includes(item.id)) {
+          todayPlan.selected[sec.key].push(item.id);
+          LS.set('hz_plan', todayPlan);
+          render(); // 리렌더 → 아카이브에서 빠지고 리스트로 올라옴
+          updateHeader();
+        }
+      };
+      restoreBtn.addEventListener('click', doRestore);
+      restoreBtn.addEventListener('touchend', e => { e.preventDefault(); doRestore(e); }, {passive:false});
+
+      body.appendChild(row);
+    });
+  });
+
+  card.appendChild(body);
+  return card;
+}
 
 // ══════════════════════════════════════════════════════
 //  Notion 연동 — Worker를 통한 항목 생성/업데이트
