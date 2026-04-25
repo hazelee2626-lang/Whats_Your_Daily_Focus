@@ -215,6 +215,9 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);padding:calc(env(sa
 .archive-item-text{flex:1;font-size:14px;color:var(--faint);word-break:keep-all;line-height:1.4;}
 .archive-restore-btn{width:26px;height:26px;border-radius:50%;background:var(--surf2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--gold);cursor:pointer;touch-action:manipulation;flex-shrink:0;transition:background .15s;}
 .archive-restore-btn:active{background:var(--surf3);}
+/* 플래닝 완료 버튼 */
+.plan-done-btn{flex-shrink:0;background:none;border:1px solid var(--faint);border-radius:20px;color:var(--faint);font-family:inherit;font-size:11px;font-weight:600;padding:3px 10px;cursor:pointer;touch-action:manipulation;transition:border-color .15s,color .15s,background .15s;white-space:nowrap;}
+.plan-done-btn:active{border-color:var(--gold);color:var(--gold);}
 /* ═══ 하루 시작 플래닝 ════════════════════════════════ */
 .plan-section{margin-bottom:20px;}
 .plan-sec-title{font-size:12px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
@@ -638,6 +641,7 @@ let curView     ='list';
 let editingName =false;
 let wasAllDone  =false;
 let collapsedSecs = LS.get('hz_collapsed', {});  // 섹션 접힘 상태
+let permDone = LS.get('hz_perm_done', {});  // 영구 완료 항목 { itemId: true }
 let todayPlan = null; // 하루 플래닝 — todayStr() 정의 후 초기화
 let dayDoneSaved = false;
 
@@ -898,8 +902,9 @@ function buildItem(sec,item,isEditing){
   const isDone=!!checked[item.id];
   const li=document.createElement('li');
   // todayPlan에 없는 항목은 .skipped
-  const isSkipped = todayPlan && todayPlan.selected &&
-    (!todayPlan.selected[sec.key] || !todayPlan.selected[sec.key].includes(item.id));
+  const isSkipped = (permDone[item.id]) ||
+    (todayPlan && todayPlan.selected &&
+    (!todayPlan.selected[sec.key] || !todayPlan.selected[sec.key].includes(item.id)));
   li.className='item-li'+(isDone?' done':'')+(isSkipped?' skipped':'');
   li.dataset.id=item.id;li.style.setProperty('--col',sec.col);
   const ts=isDone&&checkedTimes[item.id]?fmtTime(checkedTimes[item.id]):'';
@@ -908,7 +913,7 @@ function buildItem(sec,item,isEditing){
   box.addEventListener('click',e=>{e.stopPropagation();toggleCheck(sec.key,item.id);});
   box.addEventListener('touchend',e=>{e.preventDefault();e.stopPropagation();toggleCheck(sec.key,item.id);},{passive:false});
   setupDoubleTap(li.querySelector('.item-label'),()=>startInlineEdit(sec,item,li));
-  li.querySelector('.item-del').onclick=e=>{e.stopPropagation();doDelete(sec.key,item.id);};
+  li.querySelector('.item-del').onclick=e=>{e.stopPropagation();doArchiveItem(sec.key,item.id);};
   initSwipeDelete(li,sec.key,item.id);
   return li;
 }
@@ -1401,6 +1406,33 @@ function doAdd(secKey){
   inp.value='';inp.focus();updateStat(secKey);updateHeader();
 }
 
+// 편집 모드 (-) → 아카이브로 이동 (영구 삭제 아님)
+function doArchiveItem(secKey, itemId) {
+  if (!todayPlan) {
+    // 하루 시작 전이면 그냥 permDone 처리
+    permDone[itemId] = true;
+    LS.set('hz_perm_done', permDone);
+  } else {
+    // 하루 시작 후: todayPlan.selected에서 제거 → 아카이브 카드로 이동
+    if (todayPlan.selected) {
+      Object.keys(todayPlan.selected).forEach(key => {
+        todayPlan.selected[key] = (todayPlan.selected[key] || []).filter(id => id !== itemId);
+      });
+      LS.set('hz_plan', todayPlan);
+    }
+  }
+  // DOM에서 숨기기 (데이터는 유지)
+  const li = document.querySelector(`.item-li[data-id="${itemId}"]`);
+  if (li) {
+    li.style.transition = 'opacity .18s, max-height .2s';
+    li.style.opacity = '0'; li.style.maxHeight = li.offsetHeight + 'px';
+    requestAnimationFrame(() => { li.style.maxHeight = '0'; li.style.padding = '0'; });
+    setTimeout(() => render(), 220);
+  }
+  updateStat(secKey);
+  updateHeader();
+}
+
 function doDelete(secKey,itemId){
   const sec=sections.find(s=>s.key===secKey);
   sec.items=sec.items.filter(it=>it.id!==itemId);
@@ -1575,35 +1607,48 @@ function openPlanOverlay() {
     div.innerHTML = `<div class="plan-sec-title"><span class="plan-sec-pip" style="background:${sec.col}"></span>${sec.emoji} ${esc(sec.name)}</div><div class="plan-items" id="plan_${sec.key}"></div>`;
     const itemsDiv = div.querySelector(`#plan_${sec.key}`);
 
-    sec.items.forEach(item => {
+    sec.items.filter(it => !permDone[it.id]).forEach(item => {
       const isSelected = curSel === null ? true : (curSel[sec.key] || []).includes(item.id);
       const el = document.createElement('div');
       el.className = 'plan-item' + (isSelected ? ' selected' : '');
       el.style.setProperty('--col', sec.col);
       el.dataset.secKey = sec.key;
       el.dataset.itemId = item.id;
-      el.innerHTML = `<div class="plan-check">${isSelected ? '✓' : ''}</div><span class="plan-label">${esc(item.text)}</span>`;
-      // 스크롤과 탭 구분 — 이동거리 10px 이상이면 스크롤로 간주
+      el.innerHTML = `<div class="plan-check">${isSelected ? '✓' : ''}</div><span class="plan-label">${esc(item.text)}</span><button class="plan-done-btn">완료</button>`;
+      // 스크롤과 탭 구분
       let _touchStartY = 0, _touchStartX = 0;
       el.addEventListener('touchstart', e => {
         _touchStartY = e.touches[0].clientY;
         _touchStartX = e.touches[0].clientX;
       }, {passive: true});
       el.addEventListener('touchend', e => {
+        if (e.target.closest('.plan-done-btn')) return;
         const dy = Math.abs(e.changedTouches[0].clientY - _touchStartY);
         const dx = Math.abs(e.changedTouches[0].clientX - _touchStartX);
-        if (dy > 10 || dx > 10) return; // 스크롤이면 무시
+        if (dy > 10 || dx > 10) return;
         e.preventDefault();
         el.classList.toggle('selected');
         el.querySelector('.plan-check').textContent = el.classList.contains('selected') ? '✓' : '';
       }, {passive: false});
-      el.addEventListener('click', () => {
-        // 마우스 클릭용 (touch에서는 위에서 처리)
+      el.addEventListener('click', e => {
+        if (e.target.closest('.plan-done-btn')) return;
         if (!('ontouchstart' in window)) {
           el.classList.toggle('selected');
           el.querySelector('.plan-check').textContent = el.classList.contains('selected') ? '✓' : '';
         }
       });
+      // 완료 버튼 → 영구 숨김 (리스트+아카이브 모두)
+      const doneBtn = el.querySelector('.plan-done-btn');
+      const markPermDone = e => {
+        e.stopPropagation(); e.preventDefault();
+        permDone[item.id] = true;
+        LS.set('hz_perm_done', permDone);
+        el.style.transition = 'opacity .18s, max-height .2s';
+        el.style.opacity = '0'; el.style.maxHeight = '0'; el.style.overflow = 'hidden';
+        setTimeout(() => el.remove(), 220);
+      };
+      doneBtn.addEventListener('click', markPermDone);
+      doneBtn.addEventListener('touchend', e => { e.preventDefault(); markPermDone(e); }, {passive:false});
       itemsDiv.appendChild(el);
     });
 
@@ -1721,7 +1766,7 @@ function buildArchiveCard() {
   const archivedBySec = [];
   sections.forEach(sec => {
     const sel = todayPlan.selected[sec.key] || [];
-    const skipped = sec.items.filter(it => !sel.includes(it.id));
+    const skipped = sec.items.filter(it => !sel.includes(it.id) && !permDone[it.id]);
     if (skipped.length) archivedBySec.push({ sec, items: skipped });
   });
   if (!archivedBySec.length) return null;
