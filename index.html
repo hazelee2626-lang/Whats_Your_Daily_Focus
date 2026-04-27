@@ -270,6 +270,10 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);padding:calc(env(sa
 .archive-item{display:flex;align-items:center;gap:10px;padding:9px 14px 9px 16px;border-bottom:1px solid var(–border);}
 .archive-item:last-child{border-bottom:none;}
 .archive-item-text{flex:1;font-size:14px;color:var(–faint);word-break:keep-all;line-height:1.4;}
+/* undo 토스트 */
+.undo-toast{position:fixed;bottom:calc(90px + env(safe-area-inset-bottom) + 14px);left:50%;transform:translateX(-50%) translateY(4px);background:var(–surf3);border:1px solid var(–border);border-radius:14px;padding:11px 6px 11px 18px;font-size:13px;font-weight:500;color:var(–text);z-index:51;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.4);display:flex;align-items:center;gap:10px;white-space:nowrap;}
+.undo-toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:all;}
+.undo-btn{background:var(–gold);color:#12100B;border:none;border-radius:9px;padding:6px 14px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;touch-action:manipulation;}
 .archive-restore-btn{width:26px;height:26px;border-radius:50%;background:var(–surf2);border:1px solid var(–border);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(–gold);cursor:pointer;touch-action:manipulation;flex-shrink:0;transition:background .15s;}
 .archive-restore-btn:active{background:var(–surf3);}
 /* 플래닝 완료 버튼 */
@@ -331,6 +335,10 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);padding:calc(env(sa
   <button class="footer-btn btn-reset" id="resetBtn">🌅 하루 시작</button>
 </div>
 <div class="toast" id="toast"></div>
+<div class="undo-toast" id="undoToast">
+  <span id="undoMsg"></span>
+  <button class="undo-btn" id="undoBtn">↩ 실행취소</button>
+</div>
 <div class="overlay" id="discordOverlay">
   <div class="sheet">
     <div class="sheet-header"><div class="sheet-title" id="sheetTitle"></div><div class="sheet-tag" id="sheetTag"></div></div>
@@ -703,6 +711,8 @@ let collapsedSecs = LS.get('hz_collapsed', {});  // 섹션 접힘 상태
 let permDone = LS.get('hz_perm_done', {});  // 영구 완료 항목 { itemId: true }
 // 아카이브: [{secKey, itemId, text, secName, secEmoji, secCol}]
 let archivedItems = LS.get('hz_archived', []);
+// undo 스택 (세션 중만 유지, 앱 재시작시 리셋)
+let undoStack = []; // [{type, payload}]
 let todayPlan = null; // 하루 플래닝 — todayStr() 정의 후 초기화
 let dayDoneSaved = false;
 
@@ -1050,8 +1060,11 @@ function initSwipeDelete(li, secKey, itemId) {
       clearTimeout(li._swipeTimer);
       li._swipeTimer = setTimeout(() => resetSwipe(li, inner), 3000);
     } else if (dir === 'right' && dx > THRESHOLD) {
-      // 보관 바로 실행
-      doArchiveItem(secKey, itemId);
+      // 삭제랑 동일하게: 골드 존 표시 → 탭해야 실행
+      inner.style.transform = `translateX(${MAX}px)`;
+      li.classList.add('swipe-archive-reveal');
+      clearTimeout(li._archiveTimer);
+      li._archiveTimer = setTimeout(() => resetSwipe(li, inner), 3000);
     } else {
       resetSwipe(li, inner);
     }
@@ -1063,6 +1076,13 @@ function initSwipeDelete(li, secKey, itemId) {
     li.style.opacity = '0'; li.style.maxHeight = li.offsetHeight + 'px';
     requestAnimationFrame(() => { li.style.maxHeight = '0'; li.style.padding = '0'; li.style.borderBottom = 'none'; });
     setTimeout(() => doDelete(secKey, itemId), 340);
+  });
+  li.querySelector('.swipe-archive-bg').addEventListener('click', e => {
+    e.stopPropagation();
+    li.style.transition = 'opacity .2s, max-height .25s .1s, padding .25s .1s';
+    li.style.opacity = '0'; li.style.maxHeight = li.offsetHeight + 'px';
+    requestAnimationFrame(() => { li.style.maxHeight = '0'; li.style.padding = '0'; li.style.borderBottom = 'none'; });
+    setTimeout(() => doArchiveItem(secKey, itemId), 340);
   });
 
   li.addEventListener('click', () => { if (li.classList.contains('swipe-reveal') || li.classList.contains('swipe-archive-reveal')) resetSwipe(li, inner); });
@@ -1510,24 +1530,19 @@ function doAdd(secKey){
 
 // 편집 모드 (-) → 아카이브로 이동 (영구 삭제 아님)
 function doArchiveItem(secKey, itemId) {
-  // 이미 아카이브된 항목이면 무시
   if (archivedItems.some(a => a.itemId === itemId)) return;
-
-  // 섹션에서 항목 정보 가져오기
   const sec = sections.find(s => s.key === secKey);
   if (!sec) return;
   const item = sec.items.find(it => it.id === itemId);
   if (!item) return;
 
-  // hz_archived에 추가
-  archivedItems.push({
-    secKey, itemId,
-    text: item.text,
-    secName: sec.name,
-    secEmoji: sec.emoji,
-    secCol: sec.col
-  });
+  const archiveEntry = { secKey, itemId, text: item.text, secName: sec.name, secEmoji: sec.emoji, secCol: sec.col };
+  archivedItems.push(archiveEntry);
   LS.set('hz_archived', archivedItems);
+
+  // undo 스택에 추가
+  undoStack.push({ type: 'archive', payload: archiveEntry });
+  showUndoToast('보관 처리됨');
 
   // DOM 애니메이션 후 재렌더
   const li = document.querySelector(`.item-li[data-id="${itemId}"]`);
@@ -1546,6 +1561,13 @@ function doArchiveItem(secKey, itemId) {
 
 function doDelete(secKey,itemId){
   const sec=sections.find(s=>s.key===secKey);
+  const item=sec.items.find(it=>it.id===itemId);
+  // undo 스택에 추가 (삭제 전 상태 저장)
+  if(item) undoStack.push({
+    type:'delete',
+    payload:{ secKey, item:{...item}, wasChecked:!!checked[itemId], checkTime:checkedTimes[itemId]||null }
+  });
+  showUndoToast('삭제됨');
   sec.items=sec.items.filter(it=>it.id!==itemId);
   delete checked[itemId];delete checkedTimes[itemId];
   LS.set('hz_sections',sections);LS.set('hz_checked',checked);LS.set('hz_ctimes',checkedTimes);
@@ -2289,6 +2311,68 @@ function renderHistDetail(panel, dateKey, entry) {
   });
 }
 
+
+// ══════════════════════════════════════════════════════
+//  Undo 기능
+// ══════════════════════════════════════════════════════
+let undoToastTimer = null;
+
+function showUndoToast(msg) {
+  const el = document.getElementById('undoToast');
+  const msgEl = document.getElementById('undoMsg');
+  if (!el || !msgEl) return;
+  msgEl.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(undoToastTimer);
+  undoToastTimer = setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+function hideUndoToast() {
+  const el = document.getElementById('undoToast');
+  if (el) el.classList.remove('show');
+  clearTimeout(undoToastTimer);
+}
+
+function doUndo() {
+  if (!undoStack.length) { showToast('더 이상 취소할 게 없어'); return; }
+  const last = undoStack.pop();
+  hideUndoToast();
+
+  if (last.type === 'archive') {
+    // 아카이브 취소 → hz_archived에서 제거
+    archivedItems = archivedItems.filter(a => a.itemId !== last.payload.itemId);
+    LS.set('hz_archived', archivedItems);
+    render(); updateHeader();
+    showToast('↩ 보관 취소됨');
+
+  } else if (last.type === 'delete') {
+    // 삭제 취소 → 섹션에 다시 추가
+    const { secKey, item, wasChecked, checkTime } = last.payload;
+    const sec = sections.find(s => s.key === secKey);
+    if (sec) {
+      sec.items.push(item);
+      LS.set('hz_sections', sections);
+      if (wasChecked) { checked[item.id] = true; if (checkTime) checkedTimes[item.id] = checkTime; }
+      LS.set('hz_checked', checked); LS.set('hz_ctimes', checkedTimes);
+      fbWriteSections();
+      if (currentUser) {
+        if (wasChecked) {
+          set(ref(db, `users/${currentUser.uid}/checked/${item.id}`), true);
+          if (checkTime) set(ref(db, `users/${currentUser.uid}/checkedTimes/${item.id}`), checkTime);
+        }
+      }
+      render(); updateHeader();
+      showToast('↩ 삭제 취소됨');
+    }
+  }
+
+  // 아직 스택에 남아있으면 토스트 다시 표시
+  if (undoStack.length) {
+    const prev = undoStack[undoStack.length - 1];
+    showUndoToast(prev.type === 'archive' ? '보관 처리됨' : '삭제됨');
+  }
+}
+
 // ── Page Visibility: 탭이 다시 활성화되면 리스너 재연결 ──
 // 사파리가 백그라운드에서 탭을 재워버려 리스너가 끊기는 문제 해결
 document.addEventListener('visibilitychange', () => {
@@ -2298,6 +2382,10 @@ document.addEventListener('visibilitychange', () => {
     showSyncStatus('🔄 재연결됨');
   }
 });
+
+// undo 버튼
+document.getElementById('undoBtn').addEventListener('click', doUndo);
+document.getElementById('undoBtn').addEventListener('touchend', e => { e.preventDefault(); doUndo(); }, {passive:false});
 
 // ── Init ──
 initDate();initStreak();renderTitle();applyTheme(curTheme);applyLang(curLang);setView('list');
