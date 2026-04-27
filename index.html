@@ -185,14 +185,14 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);padding:calc(env(sa
 .footer-bar{position:fixed;bottom:0;left:0;right:0;padding:12px 16px calc(env(safe-area-inset-bottom) + 10px);background:linear-gradient(to top,var(--bg) 60%,transparent);display:flex;gap:10px;}
 .footer-btn{flex:1;padding:14px 10px;border-radius:16px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;border:none;touch-action:manipulation;transition:opacity .15s,transform .1s;}
 .footer-btn:active{opacity:.8;transform:scale(.98);}
-.btn-discord{background:var(--surface);border:1.5px solid var(--gold);color:var(--gold);}
-.btn-reset{background:var(--surface);border:1px solid var(--border);color:var(--dim);}
-.toast{position:fixed;bottom:calc(90px + env(safe-area-inset-bottom) + 14px);left:50%;transform:translateX(-50%) translateY(4px);background:#252018;border:1px solid #3A3328;border-radius:14px;padding:11px 18px;font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;z-index:50;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.4);}
+.btn-discord{background:var(--surface);border:1.5px solid var(--gold);color:var(--gold);font-weight:600;}
+.btn-reset{background:var(--surface);border:1.5px solid var(--border);color:var(--text);font-weight:600;}
+.toast{position:fixed;bottom:calc(90px + env(safe-area-inset-bottom) + 14px);left:50%;transform:translateX(-50%) translateY(4px);background:var(--surf3);border:1px solid var(--border);border-radius:14px;padding:11px 18px;font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;z-index:50;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.4);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 #confettiCanvas{position:fixed;inset:0;pointer-events:none;z-index:200;}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:flex-end;padding:16px;padding-bottom:calc(env(safe-area-inset-bottom) + 16px);opacity:0;pointer-events:none;transition:opacity .22s;}
 .overlay.show{opacity:1;pointer-events:all;}
-.sheet{width:100%;background:#1E1C17;border-radius:22px;padding:22px 20px 20px;transform:translateY(32px);transition:transform .28s cubic-bezier(.34,1.1,.64,1);max-height:82svh;overflow-y:auto;}
+.sheet{width:100%;background:var(--surface);border-radius:22px;padding:22px 20px 20px;transform:translateY(32px);transition:transform .28s cubic-bezier(.34,1.1,.64,1);max-height:82svh;overflow-y:auto;}
 .overlay.show .sheet{transform:translateY(0);}
 .sheet-title{font-size:16px;font-weight:700;margin-bottom:10px;}
 .sheet-desc{font-size:14px;color:var(--dim);line-height:1.65;margin-bottom:22px;}
@@ -200,9 +200,9 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);padding:calc(env(sa
 .sheet-tag{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:600;}
 .tag-todo{background:rgba(212,168,83,.18);color:var(--gold);}
 .tag-done{background:rgba(88,101,242,.2);color:#8892f8;}
-.sheet-preview{background:#2a2520;border-radius:14px;padding:14px 16px;font-size:13px;line-height:1.9;color:var(--text);white-space:pre-wrap;word-break:break-all;margin-bottom:16px;font-family:'SF Mono','Menlo',monospace;border:1px solid var(--border);}
+.sheet-preview{background:var(--surf2);border-radius:14px;padding:14px 16px;font-size:13px;line-height:1.9;color:var(--text);white-space:pre-wrap;word-break:break-all;margin-bottom:16px;font-family:'SF Mono','Menlo',monospace;border:1px solid var(--border);}
 .sheet-actions{display:flex;gap:10px;}
-.sheet-cancel{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:13px;color:var(--dim);font-family:inherit;font-size:15px;padding:14px;cursor:pointer;}
+.sheet-cancel{flex:1;background:var(--surf2);border:1px solid var(--border);border-radius:13px;color:var(--dim);font-family:inherit;font-size:15px;padding:14px;cursor:pointer;}
 .sheet-ok{flex:2;border:none;border-radius:13px;color:#fff;font-family:inherit;font-size:15px;font-weight:700;padding:14px;cursor:pointer;}
 @keyframes bop{0%{transform:scale(1)}40%{transform:scale(1.05)}100%{transform:scale(1)}}
 .bop{animation:bop .22s ease;}
@@ -256,7 +256,7 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);padding:calc(env(sa
 .streak-bar-label{font-size:8px;color:var(--faint);}
 
 /* ═══ 아카이브 섹션 ════════════════════════════════════ */
-.archive-card{background:var(–surface);border-radius:18px;overflow:hidden;opacity:.85;}
+.archive-card{background:var(–surface);border-radius:18px;overflow:hidden;border:1px solid var(–border);}
 .archive-toggle-row{display:flex;align-items:center;gap:8px;padding:13px 14px 13px 16px;cursor:pointer;touch-action:manipulation;}
 .archive-toggle-row:active{background:var(–surf2);}
 .archive-chevron{font-size:11px;color:var(–faint);transition:transform .22s ease;flex-shrink:0;}
@@ -281,7 +281,7 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);padding:calc(env(sa
 .plan-sec-pip{width:3px;height:12px;border-radius:2px;display:inline-block;}
 .plan-items{display:flex;flex-direction:column;gap:6px;}
 .plan-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(–surf2);border-radius:12px;border:1.5px solid var(–border);cursor:pointer;touch-action:manipulation;transition:border-color .15s,background .15s;}
-.plan-item.selected{border-color:var(–col);background:rgba(0,0,0,.05);}
+.plan-item.selected{border-color:var(–col);background:rgba(212,168,83,.06);}
 .plan-check{width:20px;height:20px;border-radius:6px;border:1.5px solid var(–border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;transition:background .15s,border-color .15s;}
 .plan-item.selected .plan-check{background:var(–col);border-color:var(–col);color:var(–bg);}
 .plan-label{font-size:14px;flex:1;word-break:keep-all;}
@@ -293,7 +293,7 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);padding:calc(env(sa
 .day-done-emoji{font-size:48px;margin-bottom:12px;}
 .day-done-title{font-size:18px;font-weight:700;margin-bottom:6px;}
 .day-done-sub{font-size:13px;color:var(–dim);}
-.day-done-btn{margin-top:18px;background:var(–gold);color:#12100B;border:none;border-radius:14px;padding:12px 28px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;}
+.day-done-btn{margin-top:18px;background:var(–gold);color:#12100B;border:none;border-radius:14px;padding:12px 28px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;width:100%;}
 </style>
 
 </head>
@@ -335,7 +335,7 @@ header{position:sticky;top:0;z-index:20;background:var(--bg);padding:calc(env(sa
   <div class="sheet">
     <div class="sheet-header"><div class="sheet-title" id="sheetTitle"></div><div class="sheet-tag" id="sheetTag"></div></div>
     <div class="sheet-preview" id="sheetPreview"></div>
-    <div class="sheet-actions"><button class="sheet-cancel" id="discordCancel">취소</button><button class="sheet-ok" style="background:var(--discord);" id="discordCopy">📋 복사하기</button></div>
+    <div class="sheet-actions"><button class="sheet-cancel" id="discordCancel">취소</button><button class="sheet-ok" style="background:var(--gold);color:#12100B;" id="discordCopy">📋 복사하기</button></div>
   </div>
 </div>
 <div class="overlay" id="resetOverlay">
@@ -701,6 +701,8 @@ let editingName =false;
 let wasAllDone  =false;
 let collapsedSecs = LS.get('hz_collapsed', {});  // 섹션 접힘 상태
 let permDone = LS.get('hz_perm_done', {});  // 영구 완료 항목 { itemId: true }
+// 아카이브: [{secKey, itemId, text, secName, secEmoji, secCol}]
+let archivedItems = LS.get('hz_archived', []);
 let todayPlan = null; // 하루 플래닝 — todayStr() 정의 후 초기화
 let dayDoneSaved = false;
 
@@ -964,9 +966,11 @@ function buildItem(sec,item,isEditing){
   const isDone=!!checked[item.id];
   const li=document.createElement('li');
   // todayPlan에 없는 항목은 .skipped
-  const isSkipped = (permDone[item.id]) ||
-    (todayPlan && todayPlan.selected &&
-    (!todayPlan.selected[sec.key] || !todayPlan.selected[sec.key].includes(item.id)));
+  // 아카이브된 항목 또는 영구완료 항목은 메인 리스트에서 숨김
+  const isInArchive = archivedItems.some(a => a.itemId === item.id);
+  const isInPlanSkip = todayPlan && todayPlan.selected &&
+    (!todayPlan.selected[sec.key] || !todayPlan.selected[sec.key].includes(item.id));
+  const isSkipped = permDone[item.id] || isInArchive || isInPlanSkip;
   li.className='item-li'+(isDone?' done':'')+(isSkipped?' skipped':'');
   li.dataset.id=item.id;li.style.setProperty('--col',sec.col);
   const ts=isDone&&checkedTimes[item.id]?fmtTime(checkedTimes[item.id]):'';
@@ -1468,7 +1472,8 @@ document.getElementById('dangerOk').onclick=async()=>{
   await fbNukeAll();
   sections=JSON.parse(JSON.stringify(DEFAULTS));
   checked={};checkedTimes={};streak=0;lastReset=null;appTitle='Hazel Check';settings={arcGauge:true,miniBar:true,gaugeLabel:true};
-  ['hz_sections','hz_checked','hz_ctimes','hz_streak','hz_lastReset','hz_title','hz_settings','hz_theme','hz_lang'].forEach(k=>localStorage.removeItem(k));
+  ['hz_sections','hz_checked','hz_ctimes','hz_streak','hz_lastReset','hz_title','hz_settings','hz_theme','hz_lang','hz_archived','hz_perm_done','hz_plan','hz_archive_open'].forEach(k=>localStorage.removeItem(k));
+  archivedItems = []; permDone = {};
   applyTheme('dark');
   document.getElementById('dangerOverlay').classList.remove('show');
   renderTitle();document.getElementById('streakNum').textContent=0;
@@ -1505,38 +1510,39 @@ function doAdd(secKey){
 
 // 편집 모드 (-) → 아카이브로 이동 (영구 삭제 아님)
 function doArchiveItem(secKey, itemId) {
-  // todayPlan.selected가 없으면 초기화 (하루 시작 안 했어도 아카이브 동작)
-  if (!todayPlan) {
-    todayPlan = { date: todayStr(), selected: {} };
-  }
-  if (!todayPlan.selected) {
-    // selected가 null이면 현재 전체를 selected로 만들고 해당 항목만 제거
-    todayPlan.selected = {};
-    sections.forEach(s => {
-      todayPlan.selected[s.key] = s.items.map(it => it.id).filter(id => id !== itemId);
-    });
-  } else {
-    Object.keys(todayPlan.selected).forEach(key => {
-      todayPlan.selected[key] = (todayPlan.selected[key] || []).filter(id => id !== itemId);
-    });
-    // 해당 섹션에 selected 없으면 해당 섹션 전체에서 제거
-    if (!todayPlan.selected[secKey]) {
-      const sec = sections.find(s => s.key === secKey);
-      if (sec) todayPlan.selected[secKey] = sec.items.map(it => it.id).filter(id => id !== itemId);
-    }
-  }
-  LS.set('hz_plan', todayPlan);
-  // DOM에서 숨기기 (데이터는 유지)
+  // 이미 아카이브된 항목이면 무시
+  if (archivedItems.some(a => a.itemId === itemId)) return;
+
+  // 섹션에서 항목 정보 가져오기
+  const sec = sections.find(s => s.key === secKey);
+  if (!sec) return;
+  const item = sec.items.find(it => it.id === itemId);
+  if (!item) return;
+
+  // hz_archived에 추가
+  archivedItems.push({
+    secKey, itemId,
+    text: item.text,
+    secName: sec.name,
+    secEmoji: sec.emoji,
+    secCol: sec.col
+  });
+  LS.set('hz_archived', archivedItems);
+
+  // DOM 애니메이션 후 재렌더
   const li = document.querySelector(`.item-li[data-id="${itemId}"]`);
   if (li) {
-    li.style.transition = 'opacity .18s, max-height .2s';
+    li.style.transition = 'opacity .18s, max-height .22s';
     li.style.opacity = '0'; li.style.maxHeight = li.offsetHeight + 'px';
-    requestAnimationFrame(() => { li.style.maxHeight = '0'; li.style.padding = '0'; });
-    setTimeout(() => render(), 220);
+    requestAnimationFrame(() => { li.style.maxHeight = '0'; li.style.padding = '0'; li.style.borderBottom='none'; });
+    setTimeout(() => render(), 240);
+  } else {
+    render();
   }
   updateStat(secKey);
   updateHeader();
 }
+
 
 function doDelete(secKey,itemId){
   const sec=sections.find(s=>s.key===secKey);
@@ -1847,6 +1853,13 @@ document.getElementById('planOk').onclick = () => {
   LS.set('hz_checked', checked); LS.set('hz_ctimes', checkedTimes);
   if (currentUser) { fbClearChecked(); fbWriteStreak(); }
 
+  // 미선택 항목 있으면 보관함 자동 펼침
+  const hasSkipped = sections.some(sec => {
+    const sel = selected[sec.key] || [];
+    return sec.items.some(it => !sel.includes(it.id) && !permDone[it.id]);
+  });
+  if (hasSkipped) { archiveOpen = true; LS.set('hz_archive_open', true); }
+
   render();
   if (curView === 'matrix') renderMatrix();
   updateHeader();
@@ -1921,21 +1934,34 @@ document.getElementById('dayDoneClose').onclick = () => {
 let archiveOpen = LS.get('hz_archive_open', false);
 
 function buildArchiveCard() {
-  if (!todayPlan) return null;
+  // 두 가지 소스:
+  // 1. hz_archived 배열 (doArchiveItem / 스와이프 보관으로 추가된 것)
+  // 2. planOk에서 미선택된 항목 (todayPlan.selected 기준)
 
-  // 미선택 항목 수집 (섹션별)
-  // selected가 null이면 전체 선택 상태 → 보관된 항목 없음
-  const archivedBySec = [];
-  if (todayPlan.selected) {
+  const archiveMap = {}; // secKey → [{itemId, text, secName, secEmoji, secCol}]
+
+  // 소스 1: hz_archived
+  archivedItems.forEach(a => {
+    if (!archiveMap[a.secKey]) archiveMap[a.secKey] = { name: a.secName, emoji: a.secEmoji, col: a.secCol, items: [] };
+    archiveMap[a.secKey].items.push({ id: a.itemId, text: a.text });
+  });
+
+  // 소스 2: todayPlan.selected 기준 미선택 항목 (hz_archived에 없는 것만)
+  if (todayPlan && todayPlan.selected) {
+    const archivedIds = new Set(archivedItems.map(a => a.itemId));
     sections.forEach(sec => {
       const sel = todayPlan.selected[sec.key] || [];
-      const skipped = sec.items.filter(it => !sel.includes(it.id) && !permDone[it.id]);
-      if (skipped.length) archivedBySec.push({ sec, items: skipped });
+      sec.items.forEach(it => {
+        if (!sel.includes(it.id) && !permDone[it.id] && !archivedIds.has(it.id)) {
+          if (!archiveMap[sec.key]) archiveMap[sec.key] = { name: sec.name, emoji: sec.emoji, col: sec.col, items: [] };
+          archiveMap[sec.key].items.push({ id: it.id, text: it.text });
+        }
+      });
     });
   }
-  if (!archivedBySec.length) return null;
 
-  const totalCount = archivedBySec.reduce((a, b) => a + b.items.length, 0);
+  const totalCount = Object.values(archiveMap).reduce((s, v) => s + v.items.length, 0);
+  if (!totalCount) return null;
 
   const card = document.createElement('div');
   card.className = 'archive-card' + (archiveOpen ? ' open' : '');
@@ -1943,10 +1969,7 @@ function buildArchiveCard() {
   // 토글 헤더
   const toggleRow = document.createElement('div');
   toggleRow.className = 'archive-toggle-row';
-  toggleRow.innerHTML = `
-    <span class="archive-chevron">▸</span>
-    <span class="archive-label">📦 아카이브</span>
-    <span class="archive-count">${totalCount}개</span>`;
+  toggleRow.innerHTML = `<span class="archive-chevron">▸</span><span class="archive-label">📦 보관함</span><span class="archive-count">${totalCount}개</span>`;
   const doArchiveToggle = e => {
     e.stopPropagation();
     archiveOpen = !archiveOpen;
@@ -1961,34 +1984,36 @@ function buildArchiveCard() {
   const body = document.createElement('div');
   body.className = 'archive-body';
 
-  archivedBySec.forEach(({ sec, items }) => {
-    // 섹션 레이블
+  Object.entries(archiveMap).forEach(([secKey, secData]) => {
     const secLabel = document.createElement('div');
     secLabel.className = 'archive-sec-label';
-    secLabel.innerHTML = `<span class="archive-sec-pip" style="background:${sec.col}"></span>${sec.emoji} ${esc(sec.name)}`;
+    secLabel.innerHTML = `<span class="archive-sec-pip" style="background:${secData.col}"></span>${secData.emoji} ${esc(secData.name)}`;
     body.appendChild(secLabel);
 
-    items.forEach(item => {
+    secData.items.forEach(item => {
       const row = document.createElement('div');
       row.className = 'archive-item';
-      row.innerHTML = `<span class="archive-item-text">${esc(item.text)}</span>
-        <button class="archive-restore-btn" title="오늘 리스트에 추가">＋</button>`;
+      row.innerHTML = `<span class="archive-item-text">${esc(item.text)}</span><button class="archive-restore-btn" title="오늘 리스트에 추가">＋</button>`;
 
-      // 복원 버튼 — 아카이브에서 꺼내 오늘 선택 목록에 추가
       const restoreBtn = row.querySelector('.archive-restore-btn');
       const doRestore = e => {
         e.stopPropagation();
-        if (!todayPlan.selected[sec.key]) todayPlan.selected[sec.key] = [];
-        if (!todayPlan.selected[sec.key].includes(item.id)) {
-          todayPlan.selected[sec.key].push(item.id);
-          LS.set('hz_plan', todayPlan);
-          render(); // 리렌더 → 아카이브에서 빠지고 리스트로 올라옴
-          updateHeader();
+        // hz_archived에서 제거
+        archivedItems = archivedItems.filter(a => a.itemId !== item.id);
+        LS.set('hz_archived', archivedItems);
+        // todayPlan.selected에서도 복원
+        if (todayPlan && todayPlan.selected) {
+          if (!todayPlan.selected[secKey]) todayPlan.selected[secKey] = [];
+          if (!todayPlan.selected[secKey].includes(item.id)) {
+            todayPlan.selected[secKey].push(item.id);
+            LS.set('hz_plan', todayPlan);
+          }
         }
+        render();
+        updateHeader();
       };
       restoreBtn.addEventListener('click', doRestore);
       restoreBtn.addEventListener('touchend', e => { e.preventDefault(); doRestore(e); }, {passive:false});
-
       body.appendChild(row);
     });
   });
@@ -1997,132 +2022,6 @@ function buildArchiveCard() {
   return card;
 }
 
-// ══════════════════════════════════════════════════════
-//  Notion 연동 — Worker를 통한 항목 생성/업데이트
-// ══════════════════════════════════════════════════════
-async function addToNotion(text, sectionName, itemId) {
-  if (!currentUser || !WORKER_URL) return;
-  try {
-    const res = await fetch(`${WORKER_URL}/create`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: text, section: sectionName, itemId })
-    });
-    if (res.ok) {
-      const data = await res.json();
-      // Notion pageId를 Firebase에 저장해두면 나중에 체크 시 업데이트 가능
-      if (data.pageId && currentUser) {
-        set(ref(db, `users/${currentUser.uid}/notionIds/${itemId}`), data.pageId)
-          .catch(() => {});
-      }
-    }
-  } catch(e) {
-    // Worker 미연결 시 조용히 무시 — 앱 동작에 영향 없음
-    console.log('Notion sync skipped:', e.message);
-  }
-}
-
-
-// ══════════════════════════════════════════════════════
-//  Notion → 웹 동기화 (폴링 방식, 60초마다)
-//  Notion에서 추가/삭제/체크 변경을 감지해서 웹에 반영
-// ══════════════════════════════════════════════════════
-let notionPollTimer = null;
-
-async function pollNotionSync() {
-  if (!currentUser || !WORKER_URL) return;
-  try {
-    const res = await fetch(`${WORKER_URL}/list`);
-    if (!res.ok) return;
-    const data = await res.json();
-    const notionPages = data.pages || [];
-
-    // notionIds 맵 가져오기
-    const snap = await get(ref(db, `users/${currentUser.uid}/notionIds`));
-    const notionIds = snap.val() || {}; // { itemId: pageId }
-    // 역방향 맵: pageId → itemId
-    const pageToItem = {};
-    Object.entries(notionIds).forEach(([itemId, pageId]) => { pageToItem[pageId] = itemId; });
-
-    // 현재 웹 아이템 목록
-    const allWebItems = allItems();
-    const webItemIds = new Set(allWebItems.map(it => it.id));
-
-    let sectionsChanged = false;
-    let checkedChanged = false;
-
-    for (const page of notionPages) {
-      const pageId = page.id;
-      const title = page.title;
-      const isChecked = page.checked;
-      const sectionName = page.section || '';
-      const existingItemId = pageToItem[pageId];
-
-      if (existingItemId) {
-        // 이미 연결된 아이템 — 체크 상태만 동기화
-        const wasChecked = !!checked[existingItemId];
-        if (isChecked !== wasChecked) {
-          if (isChecked) {
-            checked[existingItemId] = true;
-            checkedTimes[existingItemId] = Date.now();
-          } else {
-            delete checked[existingItemId];
-            delete checkedTimes[existingItemId];
-          }
-          checkedChanged = true;
-          // Firebase 체크 상태 동기화
-          fbWriteCheck(existingItemId, isChecked, checkedTimes[existingItemId] || 0);
-        }
-      } else {
-        // 노션에서 새로 추가된 항목 — 웹에 추가
-        const targetSec = sections.find(s => s.name === sectionName) || sections[0];
-        if (targetSec) {
-          const newId = uid('notion');
-          targetSec.items.push({ id: newId, text: title });
-          // notionId 매핑 저장
-          set(ref(db, `users/${currentUser.uid}/notionIds/${newId}`), pageId).catch(() => {});
-          sectionsChanged = true;
-        }
-      }
-    }
-
-    // 노션에서 삭제된 항목 감지 (notionIds에 있는데 Notion 목록에 없는 경우)
-    const notionPageIds = new Set(notionPages.map(p => p.id));
-    for (const [itemId, pageId] of Object.entries(notionIds)) {
-      if (!notionPageIds.has(pageId) && webItemIds.has(itemId)) {
-        // Notion에서 삭제됨 → 웹에서도 삭제
-        sections.forEach(sec => {
-          sec.items = sec.items.filter(it => it.id !== itemId);
-        });
-        delete checked[itemId];
-        delete checkedTimes[itemId];
-        remove(ref(db, `users/${currentUser.uid}/notionIds/${itemId}`)).catch(() => {});
-        remove(ref(db, `users/${currentUser.uid}/checked/${itemId}`)).catch(() => {});
-        sectionsChanged = true;
-        checkedChanged = true;
-        document.querySelector(`.item-li[data-id="${itemId}"]`)?.remove();
-        document.querySelector(`.m-item[data-id="${itemId}"]`)?.remove();
-      }
-    }
-
-    if (sectionsChanged) {
-      LS.set('hz_sections', sections);
-      fbWriteSections();
-      if (curView === 'list') render();
-      else if (curView === 'matrix') renderMatrix();
-      updateHeader();
-    }
-    if (checkedChanged) {
-      LS.set('hz_checked', checked);
-      LS.set('hz_ctimes', checkedTimes);
-      applyCheckToDOM();
-      sections.forEach(s => updateStat(s.key));
-      updateHeader();
-    }
-  } catch(e) {
-    console.log('Notion poll skipped:', e.message);
-  }
-}
 
 function startNotionSync() {
   stopNotionSync();
